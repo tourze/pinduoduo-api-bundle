@@ -3,10 +3,10 @@
 namespace PinduoduoApiBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
-use FileSystemBundle\Service\TemporaryFileService;
 use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Entity\UploadImg;
 use PinduoduoApiBundle\Repository\UploadImgRepository;
+use Tourze\TempFileBundle\Service\TemporaryFileService;
 
 class UploadService
 {

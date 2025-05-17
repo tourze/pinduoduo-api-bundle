@@ -19,12 +19,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Tourze\Symfony\Async\Message\RunCommandMessage;
+use WeuiBundle\Service\NoticeService;
 
 #[Route('/pinduoduo/auth')]
 class AuthController extends AbstractController
 {
-    use NoticeTrait;
-
     public function __construct(
         private readonly AccountRepository $accountRepository,
         private readonly SdkService $sdkService,
@@ -33,6 +32,7 @@ class AuthController extends AbstractController
         private readonly MallRepository $mallRepository,
         private readonly AuthLogRepository $authLogRepository,
         private readonly MessageBusInterface $messageBus,
+        private readonly NoticeService $noticeService,
     ) {
     }
 
@@ -85,7 +85,7 @@ class AuthController extends AbstractController
             'account' => $account,
         ]);
         if (!isset($token['access_token'])) {
-            return $this->weuiError($token['error_response']['error_msg'], $token['error_response']['error_code']);
+            return $this->noticeService->weuiError($token['error_response']['error_msg'], $token['error_response']['error_code']);
         }
 
         // 创建授权店铺的基础信息
@@ -128,6 +128,6 @@ class AuthController extends AbstractController
             return $this->redirect($request->getSession()->get('callbackUrl'));
         }
 
-        return $this->weuiSuccess('授权成功');
+        return $this->noticeService->weuiSuccess('授权成功');
     }
 }

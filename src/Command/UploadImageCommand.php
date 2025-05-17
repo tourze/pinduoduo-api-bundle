@@ -2,7 +2,6 @@
 
 namespace PinduoduoApiBundle\Command;
 
-use FileSystemBundle\Service\TemporaryFileService;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\SdkService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -11,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tourze\LockCommandBundle\Command\LockableCommand;
+use Tourze\TempFileBundle\Service\TemporaryFileService;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.img.upload
