@@ -57,10 +57,9 @@ class OrderBasicListSyncCommand extends LockableCommand
         $page = 1;
         $pageSize = 100;
 
+        $hasNext = false;
         do {
             // 推广优化、进销存、商品优化分析、搬家上货
-            // TODO 这个接口貌似不是所有接口都有的，不能直接调用
-            exit;
             $result = $sdk->auth_api->request('pdd.order.basic.list.get', [
                 'start_confirm_at' => $now->subDays(365)->getTimestamp(),
                 'end_confirm_at' => $now->getTimestamp(),

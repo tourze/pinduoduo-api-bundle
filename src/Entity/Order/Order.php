@@ -38,26 +38,6 @@ class Order
     #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
     private ?string $id = null;
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
-    private ?array $context = [];
-
-    public function getContext(): ?array
-    {
-        return $this->context;
-    }
-
-    public function setContext(?array $context): self
-    {
-        $this->context = $context;
-
-        return $this;
-    }
-
     #[ORM\Column(length: 64, options: ['comment' => '订单号'])]
     private ?string $orderSn = null;
 
@@ -209,6 +189,9 @@ class Order
     #[ORM\Column(nullable: true)]
     private ?array $itemList = null;
 
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
+    private ?array $context = [];
+
     #[Filterable]
     #[IndexColumn]
     #[ListColumn(order: 98, sorter: true)]
@@ -224,24 +207,9 @@ class Order
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '更新时间'])]
     private ?\DateTimeInterface $updateTime = null;
 
-    public function setCreateTime(?\DateTimeInterface $createdAt): void
+    public function getId(): ?string
     {
-        $this->createTime = $createdAt;
-    }
-
-    public function getCreateTime(): ?\DateTimeInterface
-    {
-        return $this->createTime;
-    }
-
-    public function setUpdateTime(?\DateTimeInterface $updateTime): void
-    {
-        $this->updateTime = $updateTime;
-    }
-
-    public function getUpdateTime(): ?\DateTimeInterface
-    {
-        return $this->updateTime;
+        return $this->id;
     }
 
     public function getOrderSn(): ?string
@@ -330,12 +298,12 @@ class Order
 
     public function getCapitalFreeDiscount(): ?string
     {
-        return $this->capital_free_discount;
+        return $this->capitalFreeDiscount;
     }
 
     public function setCapitalFreeDiscount(?string $capital_free_discount): static
     {
-        $this->capital_free_discount = $capital_free_discount;
+        $this->capitalFreeDiscount = $capital_free_discount;
 
         return $this;
     }
@@ -806,5 +774,37 @@ class Order
         $this->itemList = $itemList;
 
         return $this;
+    }
+
+    public function getContext(): ?array
+    {
+        return $this->context;
+    }
+
+    public function setContext(?array $context): self
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    public function setCreateTime(?\DateTimeInterface $createdAt): void
+    {
+        $this->createTime = $createdAt;
+    }
+
+    public function getCreateTime(): ?\DateTimeInterface
+    {
+        return $this->createTime;
+    }
+
+    public function setUpdateTime(?\DateTimeInterface $updateTime): void
+    {
+        $this->updateTime = $updateTime;
+    }
+
+    public function getUpdateTime(): ?\DateTimeInterface
+    {
+        return $this->updateTime;
     }
 }
