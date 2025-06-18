@@ -9,20 +9,14 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\SpecRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.spec.get
  */
-#[AsPermission(title: '商品属性类目')]
 #[ORM\Entity(repositoryClass: SpecRepository::class)]
 #[ORM\Table(name: 'ims_pdd_spec', options: ['comment' => '商品属性类目'])]
-class Spec
+class Spec implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -81,5 +75,10 @@ class Spec
         $this->categories->removeElement($category);
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

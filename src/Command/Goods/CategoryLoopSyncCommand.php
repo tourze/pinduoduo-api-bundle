@@ -47,16 +47,16 @@ class CategoryLoopSyncCommand extends LockableCommand
         $account = $this->accountRepository->findOneBy([
             'applicationType' => ApplicationType::搬家上货,
         ]);
-        if (!$account) {
-            $output->writeln("找不到账号：{$account->getId()}");
+        if ($account === null) {
+            $output->writeln('找不到账号');
 
             return Command::FAILURE;
         }
 
         $parent = null;
-        if ($input->getArgument('parentId')) {
+        if ($input->getArgument('parentId') !== null) {
             $parent = $this->categoryRepository->find($input->getArgument('parentId'));
-            if (!$parent) {
+            if ($parent === null) {
                 $output->writeln('找不到上级目录');
 
                 return Command::FAILURE;
@@ -64,7 +64,7 @@ class CategoryLoopSyncCommand extends LockableCommand
         }
 
         $sdk = $this->sdkService->getMerchantSdk($account);
-        $response = $sdk->api->request('pdd.goods.cats.get', ['parent_cat_id' => $parent ? $parent->getId() : 0]);
+        $response = $sdk->api->request('pdd.goods.cats.get', ['parent_cat_id' => $parent !== null ? $parent->getId() : 0]);
         if (!isset($response['goods_cats_get_response'])) {
             $this->logger->error('同步商品目录时发生错误', [
                 'response' => $response,
@@ -74,7 +74,7 @@ class CategoryLoopSyncCommand extends LockableCommand
         }
         foreach ($response['goods_cats_get_response']['goods_cats_list'] as $item) {
             $category = $this->categoryRepository->find($item['cat_id']);
-            if (!$category) {
+            if ($category === null) {
                 $category = new Category();
                 $category->setId($item['cat_id']);
             }

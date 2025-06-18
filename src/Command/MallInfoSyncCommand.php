@@ -42,7 +42,7 @@ class MallInfoSyncCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->getArgument('mallId')) {
+        if ($input->getArgument('mallId') !== null) {
             $malls = $this->mallRepository->findBy([
                 'id' => explode(',', $input->getArgument('mallId')),
             ]);

@@ -7,18 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\AuthLogRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '授权记录')]
 #[ORM\Entity(repositoryClass: AuthLogRepository::class)]
 #[ORM\Table(name: 'ims_pdd_auth_log', options: ['comment' => '授权记录'])]
 #[ORM\UniqueConstraint(name: 'ims_pdd_auth_log_idx_uniq', columns: ['account_id', 'mall_id'])]
-class AuthLog
+class AuthLog implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -57,7 +51,7 @@ class AuthLog
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => 'Refresh Token'])]
     private ?string $refreshToken = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'Access Token 过期时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Access Token 过期时间'])]
     private ?\DateTimeInterface $tokenExpireTime = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '授权scope'])]
@@ -135,5 +129,10 @@ class AuthLog
         $this->scope = $scope;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

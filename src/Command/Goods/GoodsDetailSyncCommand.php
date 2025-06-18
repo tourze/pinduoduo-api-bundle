@@ -49,14 +49,14 @@ class GoodsDetailSyncCommand extends LockableCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $goods = $this->goodsRepository->find($input->getArgument('goodsId'));
-        if (!$goods) {
+        if ($goods === null) {
             return Command::FAILURE;
         }
         $mall = $goods->getMall();
 
         // 推广优化、打单、进销存、商品优化分析、搬家上货、虚拟商家后台系统、企业ERP、商家后台系统、订单处理、电子凭证商家后台系统、跨境企业ERP报关版
         $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::搬家上货);
-        if (!$sdk) {
+        if ($sdk === null) {
             return Command::FAILURE;
         }
 
@@ -92,7 +92,7 @@ class GoodsDetailSyncCommand extends LockableCommand
         $goods->setOutSourceGoodsId($response['out_source_goods_id']);
         $goods->setGoodsTravelAttr($response['goods_travel_attr']);
         $goods->setQuanGuoLianBao((bool) $response['quan_guo_lian_bao']);
-        $goods->setBadFruitClaim((bool) $response['bad_fruit_claim']);
+        $goods->setBadFruitClaim((int) $response['bad_fruit_claim']);
         $goods->setInvoiceStatus((bool) $response['invoice_status']);
         $goods->setGroupPreSale((bool) $response['is_group_pre_sale']);
         $goods->setSkuPreSale((bool) $response['is_sku_pre_sale']);
@@ -131,7 +131,7 @@ class GoodsDetailSyncCommand extends LockableCommand
                 'goods' => $goods,
                 'id' => $item['sku_id'],
             ]);
-            if (!$sku) {
+            if ($sku === null) {
                 $sku = new Sku();
                 $sku->setGoods($goods);
                 $sku->setId($item['sku_id']);
@@ -139,7 +139,7 @@ class GoodsDetailSyncCommand extends LockableCommand
             $sku->setOutSkuSn($item['out_sku_sn']);
             $sku->setMultiPrice($item['multi_price']);
             $sku->setThumbUrl($item['thumb_url']);
-            $sku->setPreSaleTime($item['sku_pre_sale_time'] ? Carbon::createFromTimestamp($item['sku_pre_sale_time'], date_default_timezone_get()) : null);
+            $sku->setPreSaleTime($item['sku_pre_sale_time'] !== null && $item['sku_pre_sale_time'] !== 0 ? \DateTimeImmutable::createFromFormat('U', (string) $item['sku_pre_sale_time']) : null);
             $sku->setQuantity($item['quantity']);
             $sku->setReserveQuantity($item['reserve_quantity']);
             $sku->setLength($item['length']);

@@ -34,12 +34,12 @@ class GetPddMallCatRule extends BaseProcedure
     public function execute(): array
     {
         $mall = $this->mallRepository->find($this->mallId);
-        if (!$mall) {
+        if ($mall === null) {
             throw new ApiException('找不到店铺信息');
         }
 
         $category = $this->categoryRepository->find($this->categoryId);
-        if (!$category) {
+        if ($category === null) {
             throw new ApiException('找不到目录');
         }
 

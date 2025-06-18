@@ -18,18 +18,12 @@ use PinduoduoApiBundle\Enum\Order\TradeType;
 use PinduoduoApiBundle\Repository\Order\OrderRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '订单')]
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: 'ims_pdd_order', options: ['comment' => '订单'])]
-class Order
+class Order implements \Stringable
 {
     use TimestampableAware;
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -64,7 +58,7 @@ class Order
     #[ORM\Column(nullable: true, enumType: ConfirmStatus::class, options: ['comment' => '成交状态'])]
     private ?ConfirmStatus $confirmStatus = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '成交时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成交时间'])]
     private ?\DateTimeInterface $confirmTime = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '全国联保'])]
@@ -94,7 +88,7 @@ class Order
     #[ORM\Column(nullable: true, enumType: RiskControlStatus::class, options: ['comment' => '订单审核状态'])]
     private ?RiskControlStatus $riskControlStatus = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '订单承诺发货时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '订单承诺发货时间'])]
     private ?\DateTimeInterface $lastShipTime = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '是否当日发货'])]
@@ -109,10 +103,10 @@ class Order
     #[ORM\Column(nullable: true, options: ['comment' => '是否缺货'])]
     private ?bool $stockOut = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '确认收货时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '确认收货时间'])]
     private ?\DateTimeInterface $receiveTime = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '支付时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '支付时间'])]
     private ?\DateTimeInterface $payTime = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '赠品列表'])]
@@ -157,7 +151,7 @@ class Order
     #[ORM\Column(nullable: true, options: ['comment' => '是否为预售商品'])]
     private ?bool $preSale = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '发货时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '发货时间'])]
     private ?\DateTimeInterface $shippingTime = null;
 
     /**
@@ -769,4 +763,9 @@ class Order
         $this->context = $context;
 
         return $this;
-    }}
+    }
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
+    }
+}

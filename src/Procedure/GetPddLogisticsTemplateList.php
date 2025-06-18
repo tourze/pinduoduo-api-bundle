@@ -26,7 +26,7 @@ class GetPddLogisticsTemplateList extends LockableProcedure
     public function execute(): array
     {
         $mall = $this->mallRepository->find($this->mallId);
-        if (!$mall) {
+        if ($mall === null) {
             throw new ApiException('找不到店铺信息');
         }
 

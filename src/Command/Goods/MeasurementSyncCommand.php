@@ -38,7 +38,7 @@ class MeasurementSyncCommand extends LockableCommand
         foreach ($this->mallRepository->findAll() as $mall) {
             // 进销存、商品优化分析、搬家上货、虚拟商家后台系统、企业ERP、商家后台系统、电子凭证商家后台系统、跨境企业ERP报关版
             $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::搬家上货);
-            if (!$sdk) {
+            if ($sdk === null) {
                 continue;
             }
 
@@ -49,7 +49,7 @@ class MeasurementSyncCommand extends LockableCommand
 
             foreach ($response['gooods_sku_measurement_list_response']['measurement_list'] as $item) {
                 $measurement = $this->measurementRepository->findOneBy(['code' => $item['code']]);
-                if (!$measurement) {
+                if ($measurement === null) {
                     $measurement = new Measurement();
                     $measurement->setCode($item['code']);
                 }

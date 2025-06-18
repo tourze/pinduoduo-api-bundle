@@ -13,8 +13,6 @@ use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.stock.ware.create
@@ -24,10 +22,8 @@ use Tourze\EasyAdmin\Attribute\Column\ListColumn;
  */
 #[ORM\Entity(repositoryClass: StockWareRepository::class)]
 #[ORM\Table(name: 'pdd_stock_ware', options: ['comment' => '拼多多货品信息'])]
-class StockWare
+class StockWare implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -470,5 +466,10 @@ class StockWare
     public function getUpdatedBy(): ?string
     {
         return $this->updatedBy;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 } 

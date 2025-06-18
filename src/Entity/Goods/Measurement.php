@@ -7,20 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\MeasurementRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.gooods.sku.measurement.list
  */
-#[AsPermission(title: 'sku计量单位')]
 #[ORM\Entity(repositoryClass: MeasurementRepository::class)]
 #[ORM\Table(name: 'ims_pdd_measurement', options: ['comment' => 'sku计量单位'])]
-class Measurement
+class Measurement implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -62,5 +56,10 @@ class Measurement
         $this->description = $description;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

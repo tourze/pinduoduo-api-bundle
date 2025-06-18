@@ -8,20 +8,14 @@ use PinduoduoApiBundle\Repository\UploadImgRepository;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.img.upload
  */
-#[AsPermission(title: '商品图片')]
 #[ORM\Entity(repositoryClass: UploadImgRepository::class)]
 #[ORM\Table(name: 'ims_pdd_upload_img', options: ['comment' => '商品图片'])]
-class UploadImg
+class UploadImg implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -80,5 +74,10 @@ class UploadImg
         $this->url = $url;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

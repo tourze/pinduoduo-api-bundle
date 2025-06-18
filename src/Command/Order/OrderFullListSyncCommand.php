@@ -60,13 +60,13 @@ class OrderFullListSyncCommand extends LockableCommand
     private function syncList(Mall $mall, InputInterface $input, OutputInterface $output): void
     {
         $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::打单);
-        if (!$sdk) {
+        if ($sdk === null) {
             $output->writeln('找不到打单sdk授权');
 
             return;
         }
 
-        if ($input->getArgument('date')) {
+        if ($input->getArgument('date') !== null) {
             $endTime = Carbon::parse($input->getArgument('date'))->endOfDay();
             $startTime = Carbon::parse($input->getArgument('date'))->startOfDay();
         } else {
@@ -101,7 +101,7 @@ class OrderFullListSyncCommand extends LockableCommand
                         'item' => $item,
                     ]);
                     $order = $this->orderRepository->findOneBy(['orderSn' => $item['order_sn']]);
-                    if (!$order) {
+                    if ($order === null) {
                         $order = new Order();
                         $order->setOrderSn($item['order_sn']);
                     }
@@ -127,7 +127,7 @@ class OrderFullListSyncCommand extends LockableCommand
                     $order->setRiskControlStatus(RiskControlStatus::tryFrom($item['risk_control_status']));
                     $order->setRefundStatus(RefundStatus::tryFrom($item['refund_status']));
                     $order->setMktBizType(MktBizType::tryFrom($item['mkt_biz_type']));
-                    $order->setShippingType(ShippingType::tryFrom($item['shipping_type']));
+                    $order->setShippingType(ShippingType::tryFrom($item['shipping_type'])?->value);
                     $order->setPayType(PayType::tryFrom($item['pay_type']));
                     $order->setConfirmStatus(ConfirmStatus::tryFrom($item['confirm_status']));
                     $order->setStockOutHandleStatus(StockOutHandleStatus::tryFrom($item['stock_out_handle_status']));
@@ -149,13 +149,13 @@ class OrderFullListSyncCommand extends LockableCommand
                     $order->setSellerDiscount($item['seller_discount']);
                     $order->setPostage($item['postage']);
 
-                    $order->setCreateTime(Carbon::parse($item['created_time']));
-                    $order->setLastShipTime(Carbon::parse($item['last_ship_time']));
-                    $order->setReceiveTime(Carbon::parse($item['receive_time']));
-                    $order->setPayTime(Carbon::parse($item['pay_time']));
-                    $order->setUpdateTime(Carbon::parse($item['updated_at']));
-                    $order->setShippingTime(Carbon::parse($item['shipping_time']));
-                    $order->setConfirmTime(Carbon::parse($item['confirm_time']));
+                    $order->setCreateTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['created_time']) ?: null);
+                    $order->setLastShipTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['last_ship_time']) ?: null);
+                    $order->setReceiveTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['receive_time']) ?: null);
+                    $order->setPayTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['pay_time']) ?: null);
+                    $order->setUpdateTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['updated_at']) ?: null);
+                    $order->setShippingTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['shipping_time']) ?: null);
+                    $order->setConfirmTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['confirm_time']) ?: null);
 
                     // 订单也有分类，一般我们只拿最下面的分类即可
                     $category = null;
@@ -166,10 +166,10 @@ class OrderFullListSyncCommand extends LockableCommand
                         'cat_id_1',
                     ];
                     foreach ($checkKeys as $key) {
-                        if ($category) {
+                        if ($category !== null) {
                             break;
                         }
-                        if (isset($item[$key]) && $item[$key]) {
+                        if (isset($item[$key]) && $item[$key] !== null && $item[$key] !== 0) {
                             $category = $this->categoryRepository->find($item['cat_id_4']);
                         }
                     }
@@ -184,7 +184,7 @@ class OrderFullListSyncCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->getArgument('mallId')) {
+        if ($input->getArgument('mallId') !== null) {
             $malls = $this->mallRepository->findBy(['id' => $input->getArgument('mallId')]);
         } else {
             $malls = $this->mallRepository->findAll();

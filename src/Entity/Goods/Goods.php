@@ -15,17 +15,11 @@ use PinduoduoApiBundle\Enum\Goods\GoodsType;
 use PinduoduoApiBundle\Repository\Goods\GoodsRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '商品')]
 #[ORM\Entity(repositoryClass: GoodsRepository::class)]
 #[ORM\Table(name: 'ims_pdd_goods', options: ['comment' => '商品'])]
 class Goods implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -173,7 +167,7 @@ class Goods implements \Stringable
     #[ORM\Column(nullable: true, options: ['comment' => '是否成团预售'])]
     private ?bool $groupPreSale = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => '预售时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '预售时间'])]
     private ?\DateTimeInterface $preSaleTime = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '商品详情图'])]

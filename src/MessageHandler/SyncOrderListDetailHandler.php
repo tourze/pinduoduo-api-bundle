@@ -22,7 +22,7 @@ class SyncOrderListDetailHandler
     {
         $item = $message->getOrderInfo();
         $order = $this->orderRepository->findOneBy(['orderSn' => $item['order_sn']]);
-        if (!$order) {
+        if ($order === null) {
             $order = new Order();
             $order->setOrderSn($item['order_sn']);
         }

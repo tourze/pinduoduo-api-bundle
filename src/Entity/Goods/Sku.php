@@ -8,12 +8,10 @@ use PinduoduoApiBundle\Repository\Goods\SkuRepository;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.list.get
  */
-#[AsPermission(title: 'SKU')]
 #[ORM\Entity(repositoryClass: SkuRepository::class)]
 #[ORM\Table(name: 'ims_pdd_sku', options: ['comment' => 'SKU'])]
 class Sku implements \Stringable
@@ -56,7 +54,7 @@ class Sku implements \Stringable
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => 'sku预览图'])]
     private ?string $thumbUrl = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'sku预售时间'])]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'sku预售时间'])]
     private ?\DateTimeInterface $preSaleTime = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => 'sku送装参数：长度'])]

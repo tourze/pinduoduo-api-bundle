@@ -7,12 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\CountryRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '商品地区/国家')]
 #[ORM\Entity(repositoryClass: CountryRepository::class)]
 #[ORM\Table(name: 'ims_pdd_country', options: ['comment' => '商品地区/国家'])]
-class Country
+class Country implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -45,5 +43,10 @@ class Country
         $this->name = $name;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

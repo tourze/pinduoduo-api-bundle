@@ -2,7 +2,6 @@
 
 namespace PinduoduoApiBundle\Command\Goods;
 
-use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Entity\Goods\Goods;
 use PinduoduoApiBundle\Entity\Goods\Sku;
@@ -47,7 +46,7 @@ class GoodsSyncListCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->getArgument('mallId')) {
+        if ($input->getArgument('mallId') !== null) {
             $malls = $this->mallRepository->findBy(['id' => $input->getArgument('mallId')]);
         } else {
             $malls = $this->mallRepository->findAll();
@@ -87,10 +86,9 @@ class GoodsSyncListCommand extends LockableCommand
                 'mall' => $mall,
                 'id' => $item['goods_id'],
             ]);
-            if (!$goods) {
+            if ($goods === null) {
                 $goods = new Goods();
                 $goods->setMall($mall);
-                $goods->setId($item['goods_id']);
             }
             $goods->setMoreSku((bool) $item['is_more_sku']);
             $goods->setGoodsName($item['goods_name']);
@@ -99,7 +97,7 @@ class GoodsSyncListCommand extends LockableCommand
             $goods->setGoodsReserveQuantity($item['goods_reserve_quantity']);
             $goods->setGoodsQuantity($item['goods_quantity']);
             $goods->setOnsale((bool) $item['is_onsale']);
-            $goods->setCreateTime(Carbon::createFromTimestamp($item['created_at'], date_default_timezone_get()));
+            $goods->setCreateTime(\DateTimeImmutable::createFromFormat('U', (string) $item['created_at']));
             if (isset($item['sku_list']) && count($item['sku_list']) > 0) {
                 $goods->setOuterGoodsId($item['sku_list'][0]['outer_goods_id']);
             }
@@ -112,7 +110,7 @@ class GoodsSyncListCommand extends LockableCommand
                     'goods' => $goods,
                     'id' => $subItem['sku_id'],
                 ]);
-                if (!$sku) {
+                if ($sku === null) {
                     $sku = new Sku();
                     $sku->setGoods($goods);
                     $sku->setId($subItem['sku_id']);

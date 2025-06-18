@@ -1,6 +1,6 @@
 <?php
 
-namespace PinduoduoApiBundle\Controller;
+namespace PinduoduoApiBundle\Controller\Auth;
 
 use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,8 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Tourze\AsyncCommandBundle\Message\RunCommandMessage;
 use WeuiBundle\Service\NoticeService;
 
-#[Route('/pinduoduo/auth')]
-class AuthController extends AbstractController
+class CallbackController extends AbstractController
 {
     public function __construct(
         private readonly AccountRepository $accountRepository,
@@ -36,37 +35,13 @@ class AuthController extends AbstractController
     ) {
     }
 
-    #[Route('/redirect/{id}', name: 'pinduoduo-auth-redirect')]
-    public function actionRedirect(string $id, Request $request): Response
+    #[Route('/pinduoduo/auth/callback/{id}', name: 'pinduoduo-auth-callback')]
+    public function __invoke(string $id, Request $request): Response
     {
         $account = $this->accountRepository->findOneBy([
             'id' => $id,
         ]);
-        if (!$account) {
-            throw new NotFoundHttpException('找不到应用');
-        }
-
-        $sdk = $this->sdkService->getMerchantSdk($account);
-        $url = $sdk->pre_auth->authorizationUrl();
-        $response = $this->redirect($url);
-
-        // 需要保存当时回调的地址
-        if ($request->query->has('callbackUrl')) {
-            $request->getSession()->set('callbackUrl', $request->query->get('callbackUrl'));
-        } else {
-            $request->getSession()->remove('callbackUrl');
-        }
-
-        return $response;
-    }
-
-    #[Route('/callback/{id}', name: 'pinduoduo-auth-callback')]
-    public function actionCallback(string $id, Request $request): Response
-    {
-        $account = $this->accountRepository->findOneBy([
-            'id' => $id,
-        ]);
-        if (!$account) {
+        if ($account === null) {
             throw new NotFoundHttpException('找不到应用');
         }
 
@@ -90,9 +65,8 @@ class AuthController extends AbstractController
 
         // 创建授权店铺的基础信息
         $mall = $this->mallRepository->find(intval($token['owner_id']));
-        if (!$mall) {
+        if ($mall === null) {
             $mall = new Mall();
-            $mall->setId($token['owner_id']);
             $mall->setName($token['owner_name']);
         }
         $this->entityManager->persist($mall);
@@ -103,7 +77,7 @@ class AuthController extends AbstractController
             'account' => $account,
             'mall' => $mall,
         ]);
-        if (!$authLog) {
+        if ($authLog === null) {
             $authLog = new AuthLog();
             $authLog->setAccount($account);
             $authLog->setMall($mall);

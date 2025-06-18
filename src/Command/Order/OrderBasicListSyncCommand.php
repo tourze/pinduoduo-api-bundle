@@ -43,14 +43,14 @@ class OrderBasicListSyncCommand extends LockableCommand
         $now = CarbonImmutable::now();
 
         $mall = $this->mallRepository->find($input->getArgument('mallId'));
-        if (!$mall) {
+        if ($mall === null) {
             $output->writeln('找不到指定的店铺');
 
             return Command::FAILURE;
         }
 
         $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::打单);
-        if (!$sdk) {
+        if ($sdk === null) {
             throw new \Exception('找不到打单sdk授权');
         }
 

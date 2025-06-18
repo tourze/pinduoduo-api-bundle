@@ -1,0 +1,15 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    PinduoduoApiBundle\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    # 配置属性控制器加载器
+    PinduoduoApiBundle\Controller\Admin\:
+        resource: '../src/Controller/Admin/'
+        tags: ['controller.service_arguments']
+        calls:
+            - [setContainer, ['@service_container']]

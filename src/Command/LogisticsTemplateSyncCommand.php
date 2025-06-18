@@ -2,7 +2,6 @@
 
 namespace PinduoduoApiBundle\Command;
 
-use Carbon\Carbon;
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Entity\LogisticsTemplate;
 use PinduoduoApiBundle\Enum\ApplicationType;
@@ -40,7 +39,7 @@ class LogisticsTemplateSyncCommand extends LockableCommand
         foreach ($this->mallRepository->findAll() as $mall) {
             // 推广优化、打单、进销存、商品优化分析、搬家上货、虚拟商家后台系统、企业ERP、商家后台系统、订单处理、电子凭证商家后台系统、跨境企业ERP报关版
             $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::搬家上货);
-            if (!$sdk) {
+            if ($sdk === null) {
                 continue;
             }
 
@@ -62,12 +61,11 @@ class LogisticsTemplateSyncCommand extends LockableCommand
                         'mall' => $mall,
                         'id' => $item['template_id'],
                     ]);
-                    if (!$template) {
+                    if ($template === null) {
                         $template = new LogisticsTemplate();
                         $template->setMall($mall);
-                        $template->setId($item['template_id']);
                     }
-                    $template->setUpdateTime(Carbon::createFromTimestamp($item['last_updated_time'], date_default_timezone_get()));
+                    $template->setUpdateTime(\DateTimeImmutable::createFromFormat('U', (string) $item['last_updated_time']));
                     $template->setCostType(CostType::tryFrom($item['cost_type']));
                     $template->setName($item['template_name']);
                     $this->entityManager->persist($template);

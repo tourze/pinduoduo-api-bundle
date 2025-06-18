@@ -41,7 +41,7 @@ class CategoryRuleGetCommand extends LockableCommand
     {
         $mall = $this->mallRepository->find($input->getArgument('mallId'));
 
-        if ($input->getArgument('categoryId')) {
+        if ($input->getArgument('categoryId') !== null) {
             $categories = $this->categoryRepository->findBy(['id' => $input->getArgument('categoryId')]);
         } else {
             $categories = $this->categoryRepository->createQueryBuilder('a')

@@ -12,8 +12,6 @@ use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
 use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.stock.depot.priority.list
@@ -22,10 +20,8 @@ use Tourze\EasyAdmin\Attribute\Column\ListColumn;
 #[ORM\Entity(repositoryClass: DepotPriorityRepository::class)]
 #[ORM\Table(name: 'pdd_depot_priority', options: ['comment' => '拼多多仓库优先级信息'])]
 #[ORM\UniqueConstraint(name: 'uniq_depot_region', columns: ['depot_id', 'province_id', 'city_id', 'district_id'])]
-class DepotPriority
+class DepotPriority implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -217,5 +213,10 @@ class DepotPriority
     public function getUpdatedBy(): ?string
     {
         return $this->updatedBy;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

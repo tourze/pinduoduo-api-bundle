@@ -13,17 +13,12 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '店铺信息')]
 #[ORM\Entity(repositoryClass: MallRepository::class)]
 #[ORM\Table(name: 'ims_pdd_mall', options: ['comment' => '店铺信息'])]
 class Mall implements ApiArrayInterface
+, \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -281,5 +276,10 @@ class Mall implements ApiArrayInterface
             'description' => $this->getDescription(),
             'logo' => $this->getLogo(),
         ];
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

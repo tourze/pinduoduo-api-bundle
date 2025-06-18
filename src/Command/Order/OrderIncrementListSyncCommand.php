@@ -41,7 +41,7 @@ class OrderIncrementListSyncCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->getArgument('mallId')) {
+        if ($input->getArgument('mallId') !== null) {
             $malls = $this->mallRepository->findBy(['id' => $input->getArgument('mallId')]);
         } else {
             $malls = $this->mallRepository->findAll();

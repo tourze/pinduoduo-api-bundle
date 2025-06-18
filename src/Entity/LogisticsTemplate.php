@@ -8,17 +8,11 @@ use PinduoduoApiBundle\Enum\CostType;
 use PinduoduoApiBundle\Repository\LogisticsTemplateRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '商品运费模版')]
 #[ORM\Entity(repositoryClass: LogisticsTemplateRepository::class)]
 #[ORM\Table(name: 'ims_pdd_logistics_template', options: ['comment' => '商品运费模版'])]
-class LogisticsTemplate
+class LogisticsTemplate implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -76,5 +70,10 @@ class LogisticsTemplate
         $this->name = $name;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

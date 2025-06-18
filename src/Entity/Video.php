@@ -7,20 +7,14 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\VideoRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.gooods.sku.measurement.list
  */
-#[AsPermission(title: '商品视频')]
 #[ORM\Entity(repositoryClass: VideoRepository::class)]
 #[ORM\Table(name: 'ims_pdd_video', options: ['comment' => '商品视频'])]
-class Video
+class Video implements \Stringable
 {
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -78,5 +72,10 @@ class Video
         $this->status = $status;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

@@ -60,7 +60,7 @@ class SdkService
                 break;
             }
         }
-        if (!$account) {
+        if ($account === null) {
             return null;
         }
 
@@ -79,7 +79,7 @@ class SdkService
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-        if (!$authLog) {
+        if ($authLog === null) {
             throw new \RuntimeException("未授权调用：{$api}");
         }
         /** @var AuthLog $authLog */

@@ -37,7 +37,7 @@ class UploadImageCommand extends LockableCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $mall = $this->mallRepository->find($input->getArgument('mallId'));
-        if (!$mall) {
+        if ($mall === null) {
             throw new \Exception('找不到授权店铺');
         }
 

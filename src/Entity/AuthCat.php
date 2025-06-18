@@ -7,17 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\AuthCatRepository;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[AsPermission(title: '授权商家可发布的商品类目信息')]
 #[ORM\Entity(repositoryClass: AuthCatRepository::class)]
 #[ORM\Table(name: 'ims_pdd_auth_cat', options: ['comment' => '授权商家可发布的商品类目信息'])]
-class AuthCat
+class AuthCat implements \Stringable
 {
-    #[ListColumn(order: -1)]
-    #[ExportColumn]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => 'ID'])]
@@ -103,5 +97,10 @@ class AuthCat
         $this->leaf = $leaf;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
     }
 }

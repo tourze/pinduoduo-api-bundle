@@ -58,7 +58,7 @@ class AccountTest extends TestCase
     
     public function testGetAndSetCreateTime_validDateTime_createTimeIsSet(): void
     {
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
         $this->account->setCreateTime($now);
         
         $this->assertEquals($now, $this->account->getCreateTime());
@@ -66,7 +66,7 @@ class AccountTest extends TestCase
     
     public function testGetAndSetUpdateTime_validDateTime_updateTimeIsSet(): void
     {
-        $now = new \DateTime();
+        $now = new \DateTimeImmutable();
         $this->account->setUpdateTime($now);
         
         $this->assertEquals($now, $this->account->getUpdateTime());

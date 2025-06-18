@@ -30,9 +30,8 @@ class CategoryService
         $specList = [];
         foreach ($response['goods_spec_get_response']['goods_spec_list'] as $item) {
             $spec = $this->specRepository->find($item['parent_spec_id']);
-            if (!$spec) {
+            if ($spec === null) {
                 $spec = new Spec();
-                $spec->setId($item['parent_spec_id']);
             }
             $spec->setName($item['parent_spec_name']);
             $this->entityManager->persist($spec);

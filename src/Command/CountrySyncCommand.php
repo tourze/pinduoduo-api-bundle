@@ -48,7 +48,7 @@ class CountrySyncCommand extends LockableCommand
 
             foreach ($response['goods_country_get_response']['country_list'] as $item) {
                 $country = $this->countryRepository->find($item['country_id']);
-                if (!$country) {
+                if ($country === null) {
                     $country = new Country();
                     $country->setId($item['country_id']);
                 }

@@ -27,7 +27,7 @@ class GoodsListener
             return;
         }
         $sdk = $this->sdkService->getMallSdk($goods->getMall(), ApplicationType::搬家上货);
-        if (!$sdk) {
+        if ($sdk === null) {
             return;
         }
 

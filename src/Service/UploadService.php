@@ -28,7 +28,7 @@ class UploadService
             'mall' => $mall,
             'file' => $file,
         ]);
-        if (!$img) {
+        if ($img === null) {
             $img = new UploadImg();
             $img->setMall($mall);
             $img->setFile($file);

@@ -11,26 +11,12 @@ use PinduoduoApiBundle\Repository\AccountRepository;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\EasyAdmin\Attribute\Action\Creatable;
-use Tourze\EasyAdmin\Attribute\Action\Deletable;
-use Tourze\EasyAdmin\Attribute\Action\Editable;
-use Tourze\EasyAdmin\Attribute\Column\ExportColumn;
-use Tourze\EasyAdmin\Attribute\Column\ListColumn;
-use Tourze\EasyAdmin\Attribute\Field\FormField;
-use Tourze\EasyAdmin\Attribute\Filter\Keyword;
-use Tourze\EasyAdmin\Attribute\Permission\AsPermission;
 
-#[Creatable]
-#[Editable]
-#[Deletable]
-#[AsPermission(title: '开放平台')]
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
 #[ORM\Table(name: 'ims_pdd_account', options: ['comment' => '开放平台'])]
-class Account
+class Account implements \Stringable
 {
     use TimestampableAware;
-    #[ExportColumn]
-    #[ListColumn(order: -1, sorter: true)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
@@ -42,24 +28,15 @@ class Account
         return $this->id;
     }
 
-    #[Keyword]
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(length: 100, options: ['comment' => '应用名称'])]
     private string $title;
 
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(length: 120, options: ['comment' => 'ClientID'])]
     private string $clientId;
 
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(length: 120, options: ['comment' => 'ClientSecret'])]
     private string $clientSecret;
 
-    #[ListColumn]
-    #[FormField]
     #[ORM\Column(length: 60, nullable: true, enumType: ApplicationType::class, options: ['comment' => '应用类型'])]
     private ?ApplicationType $applicationType = null;
 
@@ -148,4 +125,9 @@ class Account
         }
 
         return $this;
-    }}
+    }
+    public function __toString(): string
+    {
+        return (string) ($this->getId() ?? '');
+    }
+}

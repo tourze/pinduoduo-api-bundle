@@ -41,7 +41,7 @@ class AuthCategoriesSyncSingleCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->getArgument('mallId')) {
+        if ($input->getArgument('mallId') !== null) {
             $malls = $this->mallRepository->findBy(['id' => $input->getArgument('mallId')]);
         } else {
             $malls = $this->mallRepository->findAll();
@@ -76,7 +76,7 @@ class AuthCategoriesSyncSingleCommand extends LockableCommand
                 'mall' => $mall,
                 'catId' => $item['cat_id'],
             ]);
-            if (!$authCat) {
+            if ($authCat === null) {
                 $authCat = new AuthCat();
                 $authCat->setMall($mall);
                 $authCat->setCatId($item['cat_id']);
