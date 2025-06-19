@@ -2,7 +2,6 @@
 
 namespace PinduoduoApiBundle\Command\Order;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonPeriod;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,8 +66,8 @@ class OrderFullListSyncCommand extends LockableCommand
         }
 
         if ($input->getArgument('date') !== null) {
-            $endTime = Carbon::parse($input->getArgument('date'))->endOfDay();
-            $startTime = Carbon::parse($input->getArgument('date'))->startOfDay();
+            $endTime = CarbonImmutable::parse($input->getArgument('date'))->endOfDay();
+            $startTime = CarbonImmutable::parse($input->getArgument('date'))->startOfDay();
         } else {
             $endTime = CarbonImmutable::now();
             $startTime = $endTime->subDays(90);

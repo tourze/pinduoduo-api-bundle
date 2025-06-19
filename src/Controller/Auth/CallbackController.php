@@ -2,7 +2,7 @@
 
 namespace PinduoduoApiBundle\Controller\Auth;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Command\MallInfoSyncCommand;
 use PinduoduoApiBundle\Entity\AuthLog;
@@ -85,7 +85,7 @@ class CallbackController extends AbstractController
         $authLog->setScope($token['scope'] ?? null);
         $authLog->setAccessToken($token['access_token']);
         $authLog->setRefreshToken($token['refresh_token']);
-        $authLog->setTokenExpireTime(Carbon::now()->addSeconds($token['expires_in']));
+        $authLog->setTokenExpireTime(CarbonImmutable::now()->addSeconds($token['expires_in']));
         $authLog->setContext($token);
         $this->entityManager->persist($authLog);
         $this->entityManager->flush();

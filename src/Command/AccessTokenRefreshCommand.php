@@ -2,7 +2,7 @@
 
 namespace PinduoduoApiBundle\Command;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\SdkService;
@@ -36,7 +36,7 @@ class AccessTokenRefreshCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $now = Carbon::now();
+        $now = CarbonImmutable::now();
 
         $force = (bool) $input->getArgument('force');
 
@@ -62,7 +62,7 @@ class AccessTokenRefreshCommand extends Command
                 $authLog->setAccessToken($token['access_token']);
                 $authLog->setRefreshToken($token['refresh_token']);
                 $authLog->setScope($token['scope'] ?? null);
-                $authLog->setTokenExpireTime(Carbon::createFromTimestamp($token['expires_at'], date_default_timezone_get()));
+                $authLog->setTokenExpireTime(CarbonImmutable::createFromTimestamp($token['expires_at'], date_default_timezone_get()));
                 $authLog->setContext($token);
                 $this->entityManager->persist($authLog);
                 $this->entityManager->flush();

@@ -2,7 +2,7 @@
 
 namespace PinduoduoApiBundle\Command\Goods;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Entity\Goods\Sku;
 use PinduoduoApiBundle\Enum\ApplicationType;
@@ -110,7 +110,7 @@ class GoodsDetailSyncCommand extends LockableCommand
         $goods->setOverseaGoods($response['oversea_goods']);
 
         if ($response['pre_sale_time'] > 0) {
-            $goods->setPreSaleTime(Carbon::createFromTimestamp($response['pre_sale_time'], date_default_timezone_get()));
+            $goods->setPreSaleTime(CarbonImmutable::createFromTimestamp($response['pre_sale_time'], date_default_timezone_get()));
         }
 
         $category = $this->categoryRepository->find($response['cat_id']);
