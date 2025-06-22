@@ -18,7 +18,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.country.get
  */
 #[AsCronTask('20 */2 * * *')]
-#[AsCommand(name: CountrySyncCommand::NAME, description: '同步商品地区/国家')]
+#[AsCommand(name: self::NAME, description: '同步商品地区/国家')]
 class CountrySyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-country-list';

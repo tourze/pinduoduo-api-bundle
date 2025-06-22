@@ -11,8 +11,7 @@ use PinduoduoApiBundle\Repository\Stock\StockWareRepository;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.stock.ware.create
@@ -36,72 +35,72 @@ class StockWare implements \Stringable
     }
 
     #[IndexColumn]
-    #[ORM\Column(type: 'bigint', nullable: true, options: ['comment' => '拼多多平台货品ID'])]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '拼多多平台货品ID'])]
     private ?string $wareId = null;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'string', length: 50, options: ['comment' => '货品编码'])]
+    #[ORM\Column(type: Types::STRING, length: 50, options: ['comment' => '货品编码'])]
     private string $wareSn;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'string', length: 100, options: ['comment' => '货品名称'])]
+    #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '货品名称'])]
     private string $wareName;
 
-    #[ORM\Column(type: 'string', length: 50, nullable: true, options: ['comment' => '规格'])]
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '规格'])]
     private ?string $specification = null;
 
-    #[ORM\Column(type: 'string', length: 50, nullable: true, options: ['comment' => '单位'])]
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '单位'])]
     private ?string $unit = null;
 
-    #[ORM\Column(type: 'string', length: 50, nullable: true, options: ['comment' => '品牌'])]
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '品牌'])]
     private ?string $brand = null;
 
-    #[ORM\Column(type: 'string', length: 50, nullable: true, options: ['comment' => '颜色'])]
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '颜色'])]
     private ?string $color = null;
 
-    #[ORM\Column(type: 'string', length: 50, nullable: true, options: ['comment' => '包装'])]
+    #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '包装'])]
     private ?string $packing = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '备注'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
     private ?string $note = null;
 
-    #[ORM\Column(type: 'integer', enumType: StockWareTypeEnum::class, options: ['comment' => '货品类型'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: StockWareTypeEnum::class, options: ['comment' => '货品类型'])]
     private StockWareTypeEnum $type = StockWareTypeEnum::NORMAL;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '毛重(kg)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '毛重(kg)', 'default' => 0])]
     private float $grossWeight = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '净重(kg)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '净重(kg)', 'default' => 0])]
     private float $netWeight = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '皮重(kg)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '皮重(kg)', 'default' => 0])]
     private float $tareWeight = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '重量(kg)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '重量(kg)', 'default' => 0])]
     private float $weight = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '长度(cm)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '长度(cm)', 'default' => 0])]
     private float $length = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '宽度(cm)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '宽度(cm)', 'default' => 0])]
     private float $width = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '高度(cm)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '高度(cm)', 'default' => 0])]
     private float $height = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '体积(m³)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '体积(m³)', 'default' => 0])]
     private float $volume = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '价格(元)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '价格(元)', 'default' => 0])]
     private float $price = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '服务质量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '服务质量', 'default' => 0])]
     private int $serviceQuality = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '库存数量', 'default' => 0])]
     private int $quantity = 0;
 
-    #[ORM\Column(type: 'json', nullable: true, options: ['comment' => '货品信息'])]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '货品信息'])]
     private ?array $wareInfos = null;
 
     #[ORM\OneToMany(mappedBy: 'stockWare', targetEntity: StockWareSku::class, cascade: ['persist', 'remove'])]
@@ -110,21 +109,14 @@ class StockWare implements \Stringable
     #[ORM\OneToMany(mappedBy: 'stockWare', targetEntity: StockWareDepot::class, cascade: ['persist', 'remove'])]
     private Collection $stockWareDepots;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '创建时间戳'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '创建时间戳'])]
     private int $createdAt = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '更新时间戳'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '更新时间戳'])]
     private int $updatedAt = 0;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
     use TimestampableAware;
+    use BlameableAware;
 
     public function __construct()
     {
@@ -444,29 +436,6 @@ class StockWare implements \Stringable
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function __toString(): string
     {

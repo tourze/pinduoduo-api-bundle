@@ -21,7 +21,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  * ②. 通过从后往前翻页的方式以及结束时间不小于拼多多系统时间前3min可以避免漏单问题。
  */
 #[AsCronTask('* * * * *')]
-#[AsCommand(name: OrderIncrementListSyncCommand::NAME, description: '获取增量订单列表')]
+#[AsCommand(name: self::NAME, description: '获取增量订单列表')]
 class OrderIncrementListSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-increment-order-list';

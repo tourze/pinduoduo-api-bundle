@@ -128,7 +128,7 @@ class Goods implements \Stringable
     #[ORM\Column(nullable: true, options: ['comment' => '是否当日发货'])]
     private ?bool $deliveryOneDay = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '海外商品类型'])]
     private ?int $overseaType = null;
 
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '水果类目温馨提示'])]
@@ -194,7 +194,7 @@ class Goods implements \Stringable
     #[ORM\Column(nullable: true, options: ['comment' => '缺重包退'])]
     private ?bool $lackOfWeightClaim = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '海外商品信息'])]
     private ?array $overseaGoods = null;
 
     #[ORM\ManyToOne]
@@ -455,7 +455,7 @@ class Goods implements \Stringable
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === '') {
             return '';
         }
 

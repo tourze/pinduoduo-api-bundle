@@ -33,7 +33,7 @@ class UploadService
             $img->setMall($mall);
             $img->setFile($file);
         }
-        if (!$img->getUrl()) {
+        if ($img->getUrl() === null || $img->getUrl() === '') {
             $localFile = $this->temporaryFileService->generateTemporaryFileName('pdd');
             file_put_contents($localFile, file_get_contents($img->getFile()));
             $response = $this->sdkService->request($mall, 'pdd.goods.img.upload', [

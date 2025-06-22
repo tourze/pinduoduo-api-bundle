@@ -17,7 +17,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.cat.rule.get
  */
-#[AsCommand(name: CategoryRuleGetCommand::NAME, description: '测试-类目商品发布规则查询接口')]
+#[AsCommand(name: self::NAME, description: '测试-类目商品发布规则查询接口')]
 class CategoryRuleGetCommand extends LockableCommand
 {
     public const NAME = 'pdd:get-category-rule';

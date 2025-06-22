@@ -21,7 +21,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 /**
  * PDD的商品信息会定时更新
  */
-#[AsCommand(name: CategoryLoopSyncCommand::NAME, description: '递归同步商品目录')]
+#[AsCommand(name: self::NAME, description: '递归同步商品目录')]
 class CategoryLoopSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:loop-sync-goods-category';

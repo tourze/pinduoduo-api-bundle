@@ -15,7 +15,7 @@ use Tourze\TempFileBundle\Service\TemporaryFileService;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.img.upload
  */
-#[AsCommand(name: UploadImageCommand::NAME, description: '测试-商品图片上传接口')]
+#[AsCommand(name: self::NAME, description: '测试-商品图片上传接口')]
 class UploadImageCommand extends LockableCommand
 {
     public const NAME = 'pdd:upload-image';

@@ -23,7 +23,7 @@ class GoodsListener
      */
     public function postRemove(Goods $goods): void
     {
-        if (!$goods->getMall()) {
+        if ($goods->getMall() === null) {
             return;
         }
         $sdk = $this->sdkService->getMallSdk($goods->getMall(), ApplicationType::搬家上货);

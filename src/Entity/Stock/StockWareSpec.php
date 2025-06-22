@@ -7,8 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Stock\StockWareSpecRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 #[ORM\Entity(repositoryClass: StockWareSpecRepository::class)]
 #[ORM\Table(name: 'pdd_stock_ware_spec', options: ['comment' => '拼多多货品规格信息'])]
@@ -29,24 +28,17 @@ class StockWareSpec implements \Stringable
     #[ORM\JoinColumn(nullable: true)]
     private ?StockWareSku $stockWareSku = null;
 
-    #[ORM\Column(type: 'bigint', options: ['comment' => '规格ID'])]
+    #[ORM\Column(type: Types::BIGINT, options: ['comment' => '规格ID'])]
     private string $specId;
 
-    #[ORM\Column(type: 'string', length: 50, options: ['comment' => '规格名称'])]
+    #[ORM\Column(type: Types::STRING, length: 50, options: ['comment' => '规格名称'])]
     private string $specKey;
 
-    #[ORM\Column(type: 'string', length: 100, options: ['comment' => '规格值'])]
+    #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '规格值'])]
     private string $specValue;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
     use TimestampableAware;
+    use BlameableAware;
 
     public function getStockWareSku(): ?StockWareSku
     {
@@ -92,29 +84,6 @@ class StockWareSpec implements \Stringable
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function __toString(): string
     {

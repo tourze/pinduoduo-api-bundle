@@ -49,11 +49,11 @@ class Order implements \Stringable
     #[ORM\JoinColumn(options: ['comment' => '商品分类'])]
     private ?Category $category = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
+    #[ORM\Column(length: 100, nullable: true, options: ['comment' => '保税仓库'])]
     private ?string $bondedWarehouse = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '团长免单金额，单位：元'])]
-    private ?float $capitalFreeDiscount = null;
+    private ?string $capitalFreeDiscount = null;
 
     #[ORM\Column(nullable: true, enumType: ConfirmStatus::class, options: ['comment' => '成交状态'])]
     private ?ConfirmStatus $confirmStatus = null;
@@ -178,7 +178,7 @@ class Order implements \Stringable
     #[ORM\Column(nullable: true, enumType: TradeType::class, options: ['comment' => '订单类型'])]
     private ?TradeType $tradeType = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '订单商品列表'])]
     private ?array $itemList = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]

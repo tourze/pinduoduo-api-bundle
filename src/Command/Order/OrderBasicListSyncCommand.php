@@ -18,7 +18,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use Yiisoft\Json\Json;
 
 #[AsCronTask('* 5 * * *')]
-#[AsCommand(name: OrderBasicListSyncCommand::NAME, description: '订单基础信息列表查询接口（根据成交时间）')]
+#[AsCommand(name: self::NAME, description: '订单基础信息列表查询接口（根据成交时间）')]
 class OrderBasicListSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-basic-order-list';

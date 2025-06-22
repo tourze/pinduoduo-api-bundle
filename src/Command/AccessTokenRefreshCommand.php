@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask('*/5 * * * *')]
-#[AsCommand(name: AccessTokenRefreshCommand::NAME, description: '更新AccessToken')]
+#[AsCommand(name: self::NAME, description: '更新AccessToken')]
 class AccessTokenRefreshCommand extends Command
 {
     public const NAME = 'pdd:refresh-access-token';

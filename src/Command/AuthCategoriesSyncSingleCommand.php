@@ -19,7 +19,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.authorization.cats
  */
-#[AsCommand(name: AuthCategoriesSyncSingleCommand::NAME, description: '同步授权商品目录')]
+#[AsCommand(name: self::NAME, description: '同步授权商品目录')]
 class AuthCategoriesSyncSingleCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-auth-categories';

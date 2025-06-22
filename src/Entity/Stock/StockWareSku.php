@@ -9,8 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Stock\StockWareSkuRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 #[ORM\Entity(repositoryClass: StockWareSkuRepository::class)]
 #[ORM\Table(name: 'pdd_stock_ware_sku', options: ['comment' => '拼多多货品SKU关联信息'])]
@@ -31,39 +30,32 @@ class StockWareSku implements \Stringable
     #[ORM\JoinColumn(nullable: false)]
     private StockWare $stockWare;
 
-    #[ORM\Column(type: 'bigint', options: ['comment' => '商品ID'])]
+    #[ORM\Column(type: Types::BIGINT, options: ['comment' => '商品ID'])]
     private string $goodsId;
 
-    #[ORM\Column(type: 'bigint', options: ['comment' => 'SKU ID'])]
+    #[ORM\Column(type: Types::BIGINT, options: ['comment' => 'SKU ID'])]
     private string $skuId;
 
-    #[ORM\Column(type: 'string', length: 100, options: ['comment' => 'SKU名称'])]
+    #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => 'SKU名称'])]
     private string $skuName;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '库存数量', 'default' => 0])]
     private int $quantity = 0;
 
-    #[ORM\Column(type: 'boolean', options: ['comment' => '是否存在货品', 'default' => false])]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否存在货品', 'default' => false])]
     private bool $existWare = false;
 
-    #[ORM\Column(type: 'boolean', options: ['comment' => '是否在售', 'default' => false])]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否在售', 'default' => false])]
     private bool $isOnsale = false;
 
     #[ORM\OneToMany(mappedBy: 'stockWareSku', targetEntity: StockWareSpec::class, cascade: ['persist', 'remove'])]
     private Collection $specs;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '关联状态：1-正常，2-停用'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '关联状态：1-正常，2-停用'])]
     private int $status = 1;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
     use TimestampableAware;
+    use BlameableAware;
 
     public function __construct()
     {
@@ -75,7 +67,7 @@ class StockWareSku implements \Stringable
         return $this->stockWare;
     }
 
-    public function setStockWare(StockWare $stockWare): self
+    public function setStockWare(?StockWare $stockWare): self
     {
         $this->stockWare = $stockWare;
         return $this;
@@ -182,29 +174,6 @@ class StockWareSku implements \Stringable
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function __toString(): string
     {

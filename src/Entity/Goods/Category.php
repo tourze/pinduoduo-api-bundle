@@ -40,7 +40,7 @@ class Category implements \Stringable
     #[ORM\Column(length: 120, options: ['comment' => '分类名'])]
     private string $name;
 
-    #[ORM\Column]
+    #[ORM\Column(options: ['comment' => '分类级别'])]
     private int $level;
 
     #[ORM\ManyToMany(targetEntity: Spec::class, mappedBy: 'categories', fetch: 'EXTRA_LAZY')]
@@ -49,11 +49,7 @@ class Category implements \Stringable
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Goods::class)]
     private Collection $goodsList;
 
-    /**
-     * @var array|null 其实就是 类目商品发布规则查询接口 的结果，我们缓存 cat_rule_get_response 起来
-     * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.cat.rule.get
-     */
-    #[ORM\Column(nullable: true, options: ['comment' => '分类名'])]
+    #[ORM\Column(nullable: true, options: ['comment' => '类目商品发布规则'])]
     private ?array $catRule = null;
 
     use TimestampableAware;
@@ -169,7 +165,7 @@ class Category implements \Stringable
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === '') {
             return '';
         }
 

@@ -30,10 +30,10 @@ class Video implements \Stringable
     #[ORM\JoinColumn(nullable: false)]
     private ?Mall $mall = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, options: ['comment' => '视频URL'])]
     private ?string $url = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '状态'])]
     private ?int $status = null;
 
     use TimestampableAware;

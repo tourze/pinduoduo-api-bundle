@@ -24,7 +24,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.commit.detail.get
  */
-#[AsCommand(name: GoodsDetailSyncCommand::NAME, description: '同步商品详情')]
+#[AsCommand(name: self::NAME, description: '同步商品详情')]
 class GoodsDetailSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-goods-detail';

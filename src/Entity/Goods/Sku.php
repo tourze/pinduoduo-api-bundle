@@ -63,13 +63,13 @@ class Sku implements \Stringable
     #[ORM\Column(nullable: true, options: ['comment' => '重量，单位为g'])]
     private ?int $weight = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => '海外SKU信息'])]
     private ?array $overseaSku = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
+    #[ORM\Column(length: 100, nullable: true, options: ['comment' => '外部SKU ID'])]
     private ?string $outSourceSkuId = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(nullable: true, options: ['comment' => 'SKU规格信息'])]
     private ?array $spec = null;
 
     #[ORM\Column(nullable: true, options: ['comment' => '商品单买价格 单位分'])]
@@ -179,7 +179,7 @@ class Sku implements \Stringable
 
     public function __toString(): string
     {
-        if (!$this->getId()) {
+        if ($this->getId() === null || $this->getId() === '') {
             return '';
         }
 

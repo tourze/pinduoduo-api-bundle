@@ -10,8 +10,7 @@ use PinduoduoApiBundle\Repository\Stock\DepotPriorityRepository;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.stock.depot.priority.list
@@ -38,48 +37,41 @@ class DepotPriority implements \Stringable
     private Depot $depot;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'string', length: 50, options: ['comment' => '仓库编码'])]
+    #[ORM\Column(type: Types::STRING, length: 50, options: ['comment' => '仓库编码'])]
     private string $depotCode;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'bigint', nullable: true, options: ['comment' => '拼多多平台仓库ID'])]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '拼多多平台仓库ID'])]
     private ?string $depotId = null;
 
-    #[ORM\Column(type: 'string', length: 100, options: ['comment' => '仓库名称'])]
+    #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '仓库名称'])]
     private string $depotName;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'integer', options: ['comment' => '省份ID'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '省份ID'])]
     private int $provinceId;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'integer', options: ['comment' => '城市ID'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '城市ID'])]
     private int $cityId;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'integer', options: ['comment' => '区县ID'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '区县ID'])]
     private int $districtId;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'integer', options: ['comment' => '优先级，数字越小优先级越高', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '优先级，数字越小优先级越高', 'default' => 0])]
     private int $priority = 0;
 
-    #[ORM\Column(type: 'integer', enumType: DepotPriorityTypeEnum::class, options: ['comment' => '优先级类型'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: DepotPriorityTypeEnum::class, options: ['comment' => '优先级类型'])]
     private DepotPriorityTypeEnum $priorityType = DepotPriorityTypeEnum::NORMAL;
 
     #[IndexColumn]
-    #[ORM\Column(type: 'integer', enumType: DepotStatusEnum::class, options: ['comment' => '状态'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: DepotStatusEnum::class, options: ['comment' => '状态'])]
     private DepotStatusEnum $status = DepotStatusEnum::ACTIVE;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
     use TimestampableAware;
+    use BlameableAware;
 
     public function getDepot(): Depot
     {
@@ -191,29 +183,6 @@ class DepotPriority implements \Stringable
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function __toString(): string
     {

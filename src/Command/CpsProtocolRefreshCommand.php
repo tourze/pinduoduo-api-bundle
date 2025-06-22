@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask('*/10 * * * *')]
-#[AsCommand(name: CpsProtocolRefreshCommand::NAME, description: '更新多多进宝状态')]
+#[AsCommand(name: self::NAME, description: '更新多多进宝状态')]
 class CpsProtocolRefreshCommand extends Command
 {
     public const NAME = 'pdd:refresh-cps-protocol-status';

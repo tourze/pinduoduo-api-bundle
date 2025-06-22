@@ -32,7 +32,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use Yiisoft\Json\Json;
 
 #[AsCronTask('45 */6 * * *')]
-#[AsCommand(name: OrderFullListSyncCommand::NAME, description: '获取全量订单列表')]
+#[AsCommand(name: self::NAME, description: '获取全量订单列表')]
 class OrderFullListSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-full-order-list';
@@ -168,8 +168,8 @@ class OrderFullListSyncCommand extends LockableCommand
                         if ($category !== null) {
                             break;
                         }
-                        if (isset($item[$key]) && $item[$key] !== null && $item[$key] !== 0) {
-                            $category = $this->categoryRepository->find($item['cat_id_4']);
+                        if (isset($item[$key]) && $item[$key] !== 0) {
+                            $category = $this->categoryRepository->find($item[$key]);
                         }
                     }
                     $order->setCategory($category);

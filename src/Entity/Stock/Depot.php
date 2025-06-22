@@ -10,8 +10,7 @@ use PinduoduoApiBundle\Enum\Stock\DepotTypeEnum;
 use PinduoduoApiBundle\Repository\Stock\DepotRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.express.add.depot
@@ -36,81 +35,74 @@ class Depot implements \Stringable
         return $this->id;
     }
 
-    #[ORM\Column(type: 'bigint', nullable: true, options: ['comment' => '拼多多平台仓库ID'])]
+    #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '拼多多平台仓库ID'])]
     private ?string $depotId = null;
 
-    #[ORM\Column(type: 'string', length: 50, options: ['comment' => '仓库编码'])]
+    #[ORM\Column(type: Types::STRING, length: 50, options: ['comment' => '仓库编码'])]
     private string $depotCode;
 
-    #[ORM\Column(type: 'string', length: 100, options: ['comment' => '仓库名称'])]
+    #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '仓库名称'])]
     private string $depotName;
 
-    #[ORM\Column(type: 'string', length: 50, options: ['comment' => '仓库别名'])]
+    #[ORM\Column(type: Types::STRING, length: 50, options: ['comment' => '仓库别名'])]
     private string $depotAlias;
 
-    #[ORM\Column(type: 'string', length: 20, options: ['comment' => '联系人'])]
+    #[ORM\Column(type: Types::STRING, length: 20, options: ['comment' => '联系人'])]
     private string $contact;
 
-    #[ORM\Column(type: 'string', length: 20, options: ['comment' => '联系电话'])]
+    #[ORM\Column(type: Types::STRING, length: 20, options: ['comment' => '联系电话'])]
     private string $phone;
 
-    #[ORM\Column(type: 'string', length: 255, options: ['comment' => '仓库地址'])]
+    #[ORM\Column(type: Types::STRING, length: 255, options: ['comment' => '仓库地址'])]
     private string $address;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '省份ID'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '省份ID'])]
     private int $province;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '城市ID'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '城市ID'])]
     private int $city;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '区县ID'])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '区县ID'])]
     private int $district;
 
-    #[ORM\Column(type: 'string', length: 10, options: ['comment' => '邮编'])]
+    #[ORM\Column(type: Types::STRING, length: 10, options: ['comment' => '邮编'])]
     private string $zipCode;
 
-    #[ORM\Column(type: 'integer', enumType: DepotTypeEnum::class, options: ['comment' => '仓库类型'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: DepotTypeEnum::class, options: ['comment' => '仓库类型'])]
     private DepotTypeEnum $type = DepotTypeEnum::SELF_BUILT;
 
-    #[ORM\Column(type: 'integer', enumType: DepotBusinessTypeEnum::class, options: ['comment' => '仓库业务类型'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: DepotBusinessTypeEnum::class, options: ['comment' => '仓库业务类型'])]
     private DepotBusinessTypeEnum $businessType = DepotBusinessTypeEnum::NORMAL;
 
-    #[ORM\Column(type: 'json', nullable: true, options: ['comment' => '区域覆盖信息'])]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '区域覆盖信息'])]
     private ?array $region = null;
 
-    #[ORM\Column(type: 'json', nullable: true, options: ['comment' => '其他区域覆盖信息'])]
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '其他区域覆盖信息'])]
     private ?array $otherRegion = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '仓库面积(m²)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '仓库面积(m²)', 'default' => 0])]
     private float $area = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '仓库容量(m³)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '仓库容量(m³)', 'default' => 0])]
     private float $capacity = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '已使用容量(m³)', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '已使用容量(m³)', 'default' => 0])]
     private float $usedCapacity = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '货位数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '货位数量', 'default' => 0])]
     private int $locationCount = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '已使用货位数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '已使用货位数量', 'default' => 0])]
     private int $usedLocationCount = 0;
 
-    #[ORM\Column(type: 'boolean', options: ['comment' => '是否为默认仓库', 'default' => false])]
+    #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否为默认仓库', 'default' => false])]
     private bool $isDefault = false;
 
-    #[ORM\Column(type: 'integer', enumType: DepotStatusEnum::class, options: ['comment' => '仓库状态'])]
+    #[ORM\Column(type: Types::INTEGER, enumType: DepotStatusEnum::class, options: ['comment' => '仓库状态'])]
     private DepotStatusEnum $status = DepotStatusEnum::ACTIVE;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
     use TimestampableAware;
+    use BlameableAware;
 
     public function getDepotId(): ?string
     {
@@ -354,29 +346,6 @@ class Depot implements \Stringable
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function __toString(): string
     {

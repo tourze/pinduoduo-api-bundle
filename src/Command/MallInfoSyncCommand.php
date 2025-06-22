@@ -21,7 +21,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.mall.info.get
  */
 #[AsCronTask('*/30 */2 * * *')]
-#[AsCommand(name: MallInfoSyncCommand::NAME, description: '同步店铺信息')]
+#[AsCommand(name: self::NAME, description: '同步店铺信息')]
 class MallInfoSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-mall-info-list';

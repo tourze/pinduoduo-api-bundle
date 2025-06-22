@@ -7,8 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Stock\StockWareDepotRepository;
 use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
-use Tourze\DoctrineUserBundle\Attribute\CreatedByColumn;
-use Tourze\DoctrineUserBundle\Attribute\UpdatedByColumn;
+use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
 #[ORM\Entity(repositoryClass: StockWareDepotRepository::class)]
 #[ORM\Table(name: 'pdd_stock_ware_depot', options: ['comment' => '拼多多货品仓库库存信息'])]
@@ -34,49 +33,42 @@ class StockWareDepot implements \Stringable
     #[ORM\JoinColumn(nullable: false)]
     private Depot $depot;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '可用库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '可用库存数量', 'default' => 0])]
     private int $availableQuantity = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '占用库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '占用库存数量', 'default' => 0])]
     private int $occupiedQuantity = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '锁定库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '锁定库存数量', 'default' => 0])]
     private int $lockedQuantity = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '在途库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '在途库存数量', 'default' => 0])]
     private int $onwayQuantity = 0;
 
-    #[ORM\Column(type: 'integer', options: ['comment' => '总库存数量', 'default' => 0])]
+    #[ORM\Column(type: Types::INTEGER, options: ['comment' => '总库存数量', 'default' => 0])]
     private int $totalQuantity = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '库存预警阈值', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '库存预警阈值', 'default' => 0])]
     private float $warningThreshold = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, options: ['comment' => '库存上限', 'default' => 0])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '库存上限', 'default' => 0])]
     private float $upperLimit = 0;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '货位编码'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '货位编码'])]
     private ?string $locationCode = null;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true, options: ['comment' => '备注'])]
+    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
     private ?string $note = null;
 
-    #[CreatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '创建人'])]
-    private ?string $createdBy = null;
-
-    #[UpdatedByColumn]
-    #[ORM\Column(nullable: true, options: ['comment' => '更新人'])]
-    private ?string $updatedBy = null;
-
     use TimestampableAware;
+    use BlameableAware;
 
     public function getStockWare(): StockWare
     {
         return $this->stockWare;
     }
 
-    public function setStockWare(StockWare $stockWare): self
+    public function setStockWare(?StockWare $stockWare): self
     {
         $this->stockWare = $stockWare;
         return $this;
@@ -192,29 +184,6 @@ class StockWareDepot implements \Stringable
         return $this;
     }
 
-    public function setCreatedBy(?string $createdBy): self
-    {
-        $this->createdBy = $createdBy;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?string
-    {
-        return $this->createdBy;
-    }
-
-    public function setUpdatedBy(?string $updatedBy): self
-    {
-        $this->updatedBy = $updatedBy;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?string
-    {
-        return $this->updatedBy;
-    }
 
     public function __toString(): string
     {
