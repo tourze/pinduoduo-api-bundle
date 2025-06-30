@@ -5,6 +5,7 @@ namespace PinduoduoApiBundle\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Entity\UploadImg;
+use PinduoduoApiBundle\Exception\UploadFailedException;
 use PinduoduoApiBundle\Repository\UploadImgRepository;
 use Tourze\TempFileBundle\Service\TemporaryFileService;
 
@@ -46,7 +47,7 @@ class UploadService
             //  ]
             // ]
             if (!isset($response['goods_img_upload_response'])) {
-                throw new \RuntimeException('图片上传失败');
+                throw new UploadFailedException('图片上传失败');
             }
             $img->setUrl($response['goods_img_upload_response']['url']);
         }

@@ -14,14 +14,14 @@ use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.cat.rule.get
  */
-#[MethodDoc('获取拼多多店铺的cat rules')]
-#[MethodExpose('GetPddMallCatRule')]
+#[MethodDoc(summary: '获取拼多多店铺的cat rules')]
+#[MethodExpose(method: 'GetPddMallCatRule')]
 class GetPddMallCatRule extends BaseProcedure
 {
-    #[MethodParam('店铺ID')]
+    #[MethodParam(description: '店铺ID')]
     public string $mallId;
 
-    #[MethodParam('门店ID')]
+    #[MethodParam(description: '门店ID')]
     public string $categoryId;
 
     public function __construct(

@@ -7,8 +7,8 @@ use Tourze\JsonRPC\Core\Attribute\MethodExpose;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 use Yiisoft\Json\Json;
 
-#[MethodDoc('获取拼多多商品类目（公开数据）')]
-#[MethodExpose('GetPddGoodsCategoryTreeData')]
+#[MethodDoc(summary: '获取拼多多商品类目（公开数据）')]
+#[MethodExpose(method: 'GetPddGoodsCategoryTreeData')]
 class GetPddGoodsCategoryTreeData extends BaseProcedure
 {
     public function execute(): array

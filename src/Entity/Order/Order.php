@@ -16,19 +16,15 @@ use PinduoduoApiBundle\Enum\Order\RiskControlStatus;
 use PinduoduoApiBundle\Enum\Order\StockOutHandleStatus;
 use PinduoduoApiBundle\Enum\Order\TradeType;
 use PinduoduoApiBundle\Repository\Order\OrderRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: 'ims_pdd_order', options: ['comment' => '订单'])]
 class Order implements \Stringable
 {
+    use SnowflakeKeyAware;
     use TimestampableAware;
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
 
     #[ORM\Column(length: 64, options: ['comment' => '订单号'])]
     private ?string $orderSn = null;
@@ -183,11 +179,6 @@ class Order implements \Stringable
 
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
     private ?array $context = [];
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
 
     public function getOrderSn(): ?string
     {

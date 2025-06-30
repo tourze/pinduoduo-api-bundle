@@ -5,7 +5,7 @@ namespace PinduoduoApiBundle\Entity\Stock;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Stock\StockWareDepotRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -14,16 +14,9 @@ use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 #[ORM\UniqueConstraint(name: 'uniq_ware_depot', columns: ['stock_ware_id', 'depot_id'])]
 class StockWareDepot implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
+    use BlameableAware;
 
     #[ORM\ManyToOne(targetEntity: StockWare::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -59,9 +52,6 @@ class StockWareDepot implements \Stringable
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
     private ?string $note = null;
-
-    use TimestampableAware;
-    use BlameableAware;
 
     public function getStockWare(): StockWare
     {

@@ -4,6 +4,7 @@ namespace PinduoduoApiBundle\Command\Order;
 
 use Carbon\CarbonImmutable;
 use PinduoduoApiBundle\Enum\ApplicationType;
+use PinduoduoApiBundle\Exception\SdkNotFoundException;
 use PinduoduoApiBundle\Message\SyncOrderListDetailMessage;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\SdkService;
@@ -17,7 +18,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use Yiisoft\Json\Json;
 
-#[AsCronTask('* 5 * * *')]
+#[AsCronTask(expression: '* 5 * * *')]
 #[AsCommand(name: self::NAME, description: '订单基础信息列表查询接口（根据成交时间）')]
 class OrderBasicListSyncCommand extends LockableCommand
 {
@@ -51,7 +52,7 @@ class OrderBasicListSyncCommand extends LockableCommand
 
         $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::打单);
         if ($sdk === null) {
-            throw new \Exception('找不到打单sdk授权');
+            throw new SdkNotFoundException('找不到打单sdk授权');
         }
 
         $page = 1;

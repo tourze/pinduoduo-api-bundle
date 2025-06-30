@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Command;
 
+use PinduoduoApiBundle\Exception\MallNotFoundException;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\SdkService;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -38,7 +39,7 @@ class UploadImageCommand extends LockableCommand
     {
         $mall = $this->mallRepository->find($input->getArgument('mallId'));
         if ($mall === null) {
-            throw new \Exception('找不到授权店铺');
+            throw new MallNotFoundException('找不到授权店铺');
         }
 
         $localFile = $this->temporaryFileService->generateTemporaryFileName('pdd');

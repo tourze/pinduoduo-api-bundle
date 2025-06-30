@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Enum\Stock\StockWareTypeEnum;
 use PinduoduoApiBundle\Repository\Stock\StockWareRepository;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -23,16 +23,9 @@ use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 #[ORM\Table(name: 'pdd_stock_ware', options: ['comment' => '拼多多货品信息'])]
 class StockWare implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
+    use BlameableAware;
 
     #[IndexColumn]
     #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '拼多多平台货品ID'])]
@@ -114,9 +107,6 @@ class StockWare implements \Stringable
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '更新时间戳'])]
     private int $updatedAt = 0;
-
-    use TimestampableAware;
-    use BlameableAware;
 
     public function __construct()
     {

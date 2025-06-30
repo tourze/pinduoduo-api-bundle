@@ -10,11 +10,11 @@ use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 
-#[MethodDoc('获取拼多多店铺的运费模板')]
-#[MethodExpose('GetPddLogisticsTemplateList')]
+#[MethodDoc(summary: '获取拼多多店铺的运费模板')]
+#[MethodExpose(method: 'GetPddLogisticsTemplateList')]
 class GetPddLogisticsTemplateList extends LockableProcedure
 {
-    #[MethodParam('店铺ID')]
+    #[MethodParam(description: '店铺ID')]
     public string $mallId;
 
     public function __construct(

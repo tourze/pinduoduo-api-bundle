@@ -19,7 +19,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.logistics.template.get
  */
-#[AsCronTask('*/15 * * * *')]
+#[AsCronTask(expression: '*/15 * * * *')]
 #[AsCommand(name: self::NAME, description: '同步运费模板')]
 class LogisticsTemplateSyncCommand extends LockableCommand
 {

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Stock\StockWareSkuRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -15,16 +15,9 @@ use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 #[ORM\Table(name: 'pdd_stock_ware_sku', options: ['comment' => '拼多多货品SKU关联信息'])]
 class StockWareSku implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
+    use BlameableAware;
 
     #[ORM\ManyToOne(targetEntity: StockWare::class, inversedBy: 'stockWareSkus')]
     #[ORM\JoinColumn(nullable: false)]
@@ -53,9 +46,6 @@ class StockWareSku implements \Stringable
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '关联状态：1-正常，2-停用'])]
     private int $status = 1;
-
-    use TimestampableAware;
-    use BlameableAware;
 
     public function __construct()
     {

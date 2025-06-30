@@ -10,8 +10,8 @@ use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 
-#[MethodDoc('执行PDD-API')]
-#[MethodExpose('ExecPddApi')]
+#[MethodDoc(summary: '执行PDD-API')]
+#[MethodExpose(method: 'ExecPddApi')]
 class ExecPddApi extends LockableProcedure
 {
     public function __construct(
@@ -20,13 +20,13 @@ class ExecPddApi extends LockableProcedure
     ) {
     }
 
-    #[MethodParam('店铺ID')]
+    #[MethodParam(description: '店铺ID')]
     public string $mallId;
 
-    #[MethodParam('API')]
+    #[MethodParam(description: 'API')]
     public string $api;
 
-    #[MethodParam('参数')]
+    #[MethodParam(description: '参数')]
     public array $params = [];
 
     public function execute(): array

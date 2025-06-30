@@ -8,7 +8,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Routing\Loader\AttributeClassLoader;
 use Symfony\Component\Routing\RouteCollection;
 
-#[AutoconfigureTag('controller.service_arguments')]
+#[AutoconfigureTag(name: 'controller.service_arguments')]
 class AttributeControllerLoader
 {
     public function __construct(

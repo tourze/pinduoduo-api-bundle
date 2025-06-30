@@ -11,8 +11,8 @@ use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 
-#[MethodDoc('上传PDD图片')]
-#[MethodExpose('UploadPddMallImage')]
+#[MethodDoc(summary: '上传PDD图片')]
+#[MethodExpose(method: 'UploadPddMallImage')]
 #[Log]
 class UploadPddMallImage extends LockableProcedure
 {
@@ -22,10 +22,10 @@ class UploadPddMallImage extends LockableProcedure
     ) {
     }
 
-    #[MethodParam('店铺ID')]
+    #[MethodParam(description: '店铺ID')]
     public string $mallId;
 
-    #[MethodParam('图片URL')]
+    #[MethodParam(description: '图片URL')]
     public string $imgUrl;
 
     public function execute(): array

@@ -8,7 +8,7 @@ use PinduoduoApiBundle\Enum\Stock\DepotBusinessTypeEnum;
 use PinduoduoApiBundle\Enum\Stock\DepotStatusEnum;
 use PinduoduoApiBundle\Enum\Stock\DepotTypeEnum;
 use PinduoduoApiBundle\Repository\Stock\DepotRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -24,16 +24,9 @@ use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 #[ORM\Table(name: 'pdd_depot', options: ['comment' => '拼多多仓库信息'])]
 class Depot implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
+    use BlameableAware;
 
     #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '拼多多平台仓库ID'])]
     private ?string $depotId = null;
@@ -100,9 +93,6 @@ class Depot implements \Stringable
 
     #[ORM\Column(type: Types::INTEGER, enumType: DepotStatusEnum::class, options: ['comment' => '仓库状态'])]
     private DepotStatusEnum $status = DepotStatusEnum::ACTIVE;
-
-    use TimestampableAware;
-    use BlameableAware;
 
     public function getDepotId(): ?string
     {

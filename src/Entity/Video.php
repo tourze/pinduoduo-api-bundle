@@ -5,7 +5,7 @@ namespace PinduoduoApiBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\VideoRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 /**
@@ -15,16 +15,8 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 #[ORM\Table(name: 'ims_pdd_video', options: ['comment' => '商品视频'])]
 class Video implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use TimestampableAware;
+    use SnowflakeKeyAware;
 
     #[ORM\ManyToOne(inversedBy: 'videos')]
     #[ORM\JoinColumn(nullable: false)]
@@ -35,8 +27,6 @@ class Video implements \Stringable
 
     #[ORM\Column(nullable: true, options: ['comment' => '状态'])]
     private ?int $status = null;
-
-    use TimestampableAware;
 
     public function getMall(): ?Mall
     {

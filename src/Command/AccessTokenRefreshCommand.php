@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
-#[AsCronTask('*/5 * * * *')]
+#[AsCronTask(expression: '*/5 * * * *')]
 #[AsCommand(name: self::NAME, description: '更新AccessToken')]
 class AccessTokenRefreshCommand extends Command
 {

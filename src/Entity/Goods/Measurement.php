@@ -5,7 +5,7 @@ namespace PinduoduoApiBundle\Entity\Goods;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\MeasurementRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 /**
@@ -15,24 +15,14 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 #[ORM\Table(name: 'ims_pdd_measurement', options: ['comment' => 'sku计量单位'])]
 class Measurement implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
 
     #[ORM\Column(length: 30, unique: true, options: ['comment' => '编码'])]
     private string $code;
 
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '说明'])]
     private ?string $description = null;
-
-    use TimestampableAware;
 
     public function getCode(): string
     {

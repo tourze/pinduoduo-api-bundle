@@ -52,27 +52,4 @@ class CategoryServiceTest extends TestCase
         $this->categoryService->syncSpecList($mall, $category);
     }
     
-    /**
-     * 由于Spec类的实现问题，我们需要跳过这个测试
-     */
-    public function testSyncSpecList_withValidResponse_createsNewSpecsAndUpdateCategory(): void
-    {
-        $this->markTestSkipped('由于Spec类没有setId方法，无法完成此测试');
-    }
-    
-    /**
-     * 由于Spec类的实现问题，我们需要跳过这个测试
-     */
-    public function testSyncSpecList_withExistingAndNewSpecs_updatesExistingAndCreatesNewSpecs(): void
-    {
-        $this->markTestSkipped('由于Spec类没有setId方法，无法完成此测试');
-    }
-    
-    /**
-     * 由于Spec类的实现问题，我们需要跳过这个测试
-     */
-    public function testSyncSpecList_withExistingSpecsInCategory_removesOldAndAddsNewSpecs(): void
-    {
-        $this->markTestSkipped('由于Spec类没有setId方法，无法完成此测试');
-    }
 } 

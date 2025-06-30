@@ -35,7 +35,7 @@ class CallbackController extends AbstractController
     ) {
     }
 
-    #[Route('/pinduoduo/auth/callback/{id}', name: 'pinduoduo-auth-callback')]
+    #[Route(path: '/pinduoduo/auth/callback/{id}', name: 'pinduoduo-auth-callback')]
     public function __invoke(string $id, Request $request): Response
     {
         $account = $this->accountRepository->findOneBy([

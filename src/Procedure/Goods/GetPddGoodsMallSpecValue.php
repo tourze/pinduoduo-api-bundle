@@ -10,8 +10,8 @@ use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 
-#[MethodDoc('商品属性类目接口')]
-#[MethodExpose('GetPddGoodsMallSpecValue')]
+#[MethodDoc(summary: '商品属性类目接口')]
+#[MethodExpose(method: 'GetPddGoodsMallSpecValue')]
 class GetPddGoodsMallSpecValue extends LockableProcedure
 {
     public function __construct(
@@ -20,13 +20,13 @@ class GetPddGoodsMallSpecValue extends LockableProcedure
     ) {
     }
 
-    #[MethodParam('店铺ID')]
+    #[MethodParam(description: '店铺ID')]
     public string $mallId;
 
-    #[MethodParam('拼多多标准规格ID')]
+    #[MethodParam(description: '拼多多标准规格ID')]
     public string $parentSpecId;
 
-    #[MethodParam('商家编辑的规格值')]
+    #[MethodParam(description: '商家编辑的规格值')]
     public string $specName;
 
     public function execute(): array

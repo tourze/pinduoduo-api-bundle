@@ -5,7 +5,7 @@ namespace PinduoduoApiBundle\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\AuthLogRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: AuthLogRepository::class)]
@@ -13,16 +13,8 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 #[ORM\UniqueConstraint(name: 'ims_pdd_auth_log_idx_uniq', columns: ['account_id', 'mall_id'])]
 class AuthLog implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use TimestampableAware;
+    use SnowflakeKeyAware;
 
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
     private ?array $context = [];
@@ -56,8 +48,6 @@ class AuthLog implements \Stringable
 
     #[ORM\Column(nullable: true, options: ['comment' => '授权scope'])]
     private ?array $scope = null;
-
-    use TimestampableAware;
 
     public function getAccount(): ?Account
     {

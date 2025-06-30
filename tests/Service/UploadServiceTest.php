@@ -7,6 +7,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Entity\UploadImg;
+use PinduoduoApiBundle\Exception\UploadFailedException;
 use PinduoduoApiBundle\Repository\UploadImgRepository;
 use PinduoduoApiBundle\Service\SdkService;
 use PinduoduoApiBundle\Service\UploadService;
@@ -73,7 +74,7 @@ class UploadServiceTest extends TestCase
     public function testUploadImage_existingImageWithoutUrl_uploadsImageAndUpdatesUrl(): void
     {
         $mall = $this->createMock(Mall::class);
-        $filePath = '/path/to/image.jpg';
+        $filePath = sys_get_temp_dir() . '/test_image.jpg';
         $tempFilePath = '/tmp/pdd_temp_123456';
         
         $existingImg = new UploadImg();
@@ -123,7 +124,7 @@ class UploadServiceTest extends TestCase
     public function testUploadImage_newImage_createsNewImageAndUploads(): void
     {
         $mall = $this->createMock(Mall::class);
-        $filePath = '/path/to/new-image.jpg';
+        $filePath = sys_get_temp_dir() . '/test_image2.jpg';
         $tempFilePath = '/tmp/pdd_temp_789012';
         
         $this->imgRepository->expects($this->once())
@@ -169,7 +170,7 @@ class UploadServiceTest extends TestCase
     public function testUploadImage_apiResponseWithoutExpectedFormat_throwsException(): void
     {
         $mall = $this->createMock(Mall::class);
-        $filePath = '/path/to/image.jpg';
+        $filePath = sys_get_temp_dir() . '/test_image3.jpg';
         $tempFilePath = '/tmp/pdd_temp_456789';
         
         $this->imgRepository->expects($this->once())
@@ -195,7 +196,7 @@ class UploadServiceTest extends TestCase
             ->method('request')
             ->willReturn($invalidResponse);
             
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(UploadFailedException::class);
         $this->expectExceptionMessage('图片上传失败');
         
         $this->uploadService->uploadImage($mall, $filePath);
@@ -206,8 +207,24 @@ class UploadServiceTest extends TestCase
      */
     private function mockFileOperations(string $source, string $destination): void
     {
-        // 由于file_put_contents和file_get_contents是PHP内置函数，
-        // 我们需要使用runkit扩展修改它们的行为，但这超出了单元测试的范围
-        // 在这个测试用例中，我们只是假设文件操作成功
+        // 创建一个真实的临时文件避免file_get_contents警告
+        if (!file_exists($source)) {
+            file_put_contents($source, 'test image content');
+        }
+    }
+    
+    protected function tearDown(): void
+    {
+        // 清理测试文件
+        $testFiles = [
+            sys_get_temp_dir() . '/test_image.jpg',
+            sys_get_temp_dir() . '/test_image2.jpg', 
+            sys_get_temp_dir() . '/test_image3.jpg'
+        ];
+        foreach ($testFiles as $file) {
+            if (file_exists($file)) {
+                unlink($file);
+            }
+        }
     }
 } 

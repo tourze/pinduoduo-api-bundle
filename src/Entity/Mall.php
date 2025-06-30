@@ -11,7 +11,7 @@ use PinduoduoApiBundle\Enum\MerchantType;
 use PinduoduoApiBundle\Repository\MallRepository;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Tourze\Arrayable\ApiArrayInterface;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: MallRepository::class)]
@@ -19,16 +19,8 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 class Mall implements ApiArrayInterface
 , \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use TimestampableAware;
+    use SnowflakeKeyAware;
 
     #[ORM\Column(length: 120, options: ['comment' => '店铺名称'])]
     private string $name;
@@ -63,8 +55,6 @@ class Mall implements ApiArrayInterface
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'mall', targetEntity: AuthCat::class, orphanRemoval: true)]
     private Collection $authCats;
-
-    use TimestampableAware;
 
     public function __construct()
     {

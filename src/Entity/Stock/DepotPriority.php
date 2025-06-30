@@ -8,7 +8,7 @@ use PinduoduoApiBundle\Enum\Stock\DepotPriorityTypeEnum;
 use PinduoduoApiBundle\Enum\Stock\DepotStatusEnum;
 use PinduoduoApiBundle\Repository\Stock\DepotPriorityRepository;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 
@@ -21,16 +21,9 @@ use Tourze\DoctrineUserBundle\Traits\BlameableAware;
 #[ORM\UniqueConstraint(name: 'uniq_depot_region', columns: ['depot_id', 'province_id', 'city_id', 'district_id'])]
 class DepotPriority implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
+    use BlameableAware;
 
     #[ORM\ManyToOne(targetEntity: Depot::class)]
     #[ORM\JoinColumn(nullable: false)]
@@ -69,9 +62,6 @@ class DepotPriority implements \Stringable
     #[IndexColumn]
     #[ORM\Column(type: Types::INTEGER, enumType: DepotStatusEnum::class, options: ['comment' => '状态'])]
     private DepotStatusEnum $status = DepotStatusEnum::ACTIVE;
-
-    use TimestampableAware;
-    use BlameableAware;
 
     public function getDepot(): Depot
     {

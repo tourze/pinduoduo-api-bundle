@@ -31,7 +31,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
 use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 use Yiisoft\Json\Json;
 
-#[AsCronTask('45 */6 * * *')]
+#[AsCronTask(expression: '45 */6 * * *')]
 #[AsCommand(name: self::NAME, description: '获取全量订单列表')]
 class OrderFullListSyncCommand extends LockableCommand
 {
@@ -106,7 +106,7 @@ class OrderFullListSyncCommand extends LockableCommand
                     }
 
                     // 保存请求时的上下文
-                    $context = $order->getContext() ?: [];
+                    $context = $order->getContext() ?? [];
                     $context['pdd.order.list.get'] = $item;
                     $order->setContext($context);
 
@@ -148,13 +148,20 @@ class OrderFullListSyncCommand extends LockableCommand
                     $order->setSellerDiscount($item['seller_discount']);
                     $order->setPostage($item['postage']);
 
-                    $order->setCreateTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['created_time']) ?: null);
-                    $order->setLastShipTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['last_ship_time']) ?: null);
-                    $order->setReceiveTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['receive_time']) ?: null);
-                    $order->setPayTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['pay_time']) ?: null);
-                    $order->setUpdateTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['updated_at']) ?: null);
-                    $order->setShippingTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['shipping_time']) ?: null);
-                    $order->setConfirmTime(\DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['confirm_time']) ?: null);
+                    $createTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['created_time']);
+                    $order->setCreateTime($createTime !== false ? $createTime : null);
+                    $lastShipTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['last_ship_time']);
+                    $order->setLastShipTime($lastShipTime !== false ? $lastShipTime : null);
+                    $receiveTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['receive_time']);
+                    $order->setReceiveTime($receiveTime !== false ? $receiveTime : null);
+                    $payTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['pay_time']);
+                    $order->setPayTime($payTime !== false ? $payTime : null);
+                    $updateTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['updated_at']);
+                    $order->setUpdateTime($updateTime !== false ? $updateTime : null);
+                    $shippingTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['shipping_time']);
+                    $order->setShippingTime($shippingTime !== false ? $shippingTime : null);
+                    $confirmTime = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $item['confirm_time']);
+                    $order->setConfirmTime($confirmTime !== false ? $confirmTime : null);
 
                     // 订单也有分类，一般我们只拿最下面的分类即可
                     $category = null;

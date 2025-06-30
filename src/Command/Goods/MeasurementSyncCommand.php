@@ -18,7 +18,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.gooods.sku.measurement.list
  */
-#[AsCronTask('* 7 * * *')]
+#[AsCronTask(expression: '* 7 * * *')]
 #[AsCommand(name: self::NAME, description: '同步商品sku计量单位')]
 class MeasurementSyncCommand extends LockableCommand
 {

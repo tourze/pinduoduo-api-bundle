@@ -20,7 +20,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  * ①. 一次请求只能查询时间跨度为30分钟的增量交易记录，即end_updated_at - start_updated_at<= 30min。
  * ②. 通过从后往前翻页的方式以及结束时间不小于拼多多系统时间前3min可以避免漏单问题。
  */
-#[AsCronTask('* * * * *')]
+#[AsCronTask(expression: '* * * * *')]
 #[AsCommand(name: self::NAME, description: '获取增量订单列表')]
 class OrderIncrementListSyncCommand extends LockableCommand
 {

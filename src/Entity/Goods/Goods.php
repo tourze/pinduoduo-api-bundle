@@ -13,23 +13,15 @@ use PinduoduoApiBundle\Enum\Goods\DeliveryType;
 use PinduoduoApiBundle\Enum\Goods\GoodsStatus;
 use PinduoduoApiBundle\Enum\Goods\GoodsType;
 use PinduoduoApiBundle\Repository\Goods\GoodsRepository;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: GoodsRepository::class)]
 #[ORM\Table(name: 'ims_pdd_goods', options: ['comment' => '商品'])]
 class Goods implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
+    use TimestampableAware;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -199,8 +191,6 @@ class Goods implements \Stringable
 
     #[ORM\ManyToOne]
     private ?LogisticsTemplate $costTemplate = null;
-
-    use TimestampableAware;
 
     public function __construct()
     {

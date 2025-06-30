@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Enum\ApplicationType;
 use PinduoduoApiBundle\Repository\AccountRepository;
 use Symfony\Component\Serializer\Attribute\Ignore;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: AccountRepository::class)]
@@ -17,16 +17,7 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 class Account implements \Stringable
 {
     use TimestampableAware;
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
-
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
+    use SnowflakeKeyAware;
 
     #[ORM\Column(length: 100, options: ['comment' => '应用名称'])]
     private string $title;

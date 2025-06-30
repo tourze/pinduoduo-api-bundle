@@ -13,14 +13,14 @@ use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.authorization.cats
  */
-#[MethodDoc('获取当前授权商家可发布的商品类目信息')]
-#[MethodExpose('GetPddMallAuthorizationCates')]
+#[MethodDoc(summary: '获取当前授权商家可发布的商品类目信息')]
+#[MethodExpose(method: 'GetPddMallAuthorizationCates')]
 class GetPddMallAuthorizationCates extends BaseProcedure
 {
-    #[MethodParam('默认值=0，值=0时为顶点cat_id,通过树顶级节点获取一级类目')]
+    #[MethodParam(description: '默认值=0，值=0时为顶点cat_id,通过树顶级节点获取一级类目')]
     public int $parentCatId = 0;
 
-    #[MethodParam('店铺ID')]
+    #[MethodParam(description: '店铺ID')]
     public string $mallId;
 
     public function __construct(

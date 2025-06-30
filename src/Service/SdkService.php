@@ -10,6 +10,7 @@ use PinduoduoApiBundle\Entity\AuthLog;
 use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Enum\ApplicationType;
 use PinduoduoApiBundle\Exception\PddApiException;
+use PinduoduoApiBundle\Exception\UnauthorizedException;
 use PinduoduoApiBundle\Repository\AuthLogRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -80,7 +81,7 @@ class SdkService
             ->getQuery()
             ->getOneOrNullResult();
         if ($authLog === null) {
-            throw new \RuntimeException("未授权调用：{$api}");
+            throw new UnauthorizedException("未授权调用：{$api}");
         }
         /** @var AuthLog $authLog */
         $sdk = $this->getMerchantSdk($authLog->getAccount());

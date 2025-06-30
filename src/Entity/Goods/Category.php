@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\CategoryRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
-use Tourze\DoctrineSnowflakeBundle\Service\SnowflakeIdGenerator;
+use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -17,11 +17,8 @@ use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 #[ORM\UniqueConstraint(name: 'ims_pdd_goods_category_idx_uniq', columns: ['name', 'parent_id'])]
 class Category implements \Stringable
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(SnowflakeIdGenerator::class)]
-    #[ORM\Column(type: Types::BIGINT, nullable: false, options: ['comment' => 'ID'])]
-    private ?string $id = null;
+    use TimestampableAware;
+    use SnowflakeKeyAware;
 
     #[Ignore]
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'children')]
@@ -33,7 +30,7 @@ class Category implements \Stringable
      *
      * @var Collection<Category>
      */
-    #[Groups(['restful_read', 'api_tree'])]
+    #[Groups(groups: ['restful_read', 'api_tree'])]
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: Category::class)]
     private Collection $children;
 
@@ -52,23 +49,12 @@ class Category implements \Stringable
     #[ORM\Column(nullable: true, options: ['comment' => '类目商品发布规则'])]
     private ?array $catRule = null;
 
-    use TimestampableAware;
-
     public function __construct()
     {
         $this->specs = new ArrayCollection();
         $this->goodsList = new ArrayCollection();
     }
 
-    public function getId(): ?string
-    {
-        return $this->id;
-    }
-
-    public function setId(?string $id): void
-    {
-        $this->id = $id;
-    }
 
     public function getParent(): ?Category
     {

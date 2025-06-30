@@ -18,7 +18,7 @@ class RedirectController extends AbstractController
     ) {
     }
 
-    #[Route('/pinduoduo/auth/redirect/{id}', name: 'pinduoduo-auth-redirect')]
+    #[Route(path: '/pinduoduo/auth/redirect/{id}', name: 'pinduoduo-auth-redirect')]
     public function __invoke(string $id, Request $request): Response
     {
         $account = $this->accountRepository->findOneBy([

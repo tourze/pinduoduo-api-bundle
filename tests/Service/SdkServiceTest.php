@@ -12,6 +12,7 @@ use PinduoduoApiBundle\Entity\Account;
 use PinduoduoApiBundle\Entity\AuthLog;
 use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Enum\ApplicationType;
+use PinduoduoApiBundle\Exception\UnauthorizedException;
 use PinduoduoApiBundle\Repository\AuthLogRepository;
 use PinduoduoApiBundle\Service\SdkService;
 use Psr\Log\LoggerInterface;
@@ -98,45 +99,6 @@ class SdkServiceTest extends TestCase
         $this->assertNull($result);
     }
     
-    /**
-     * 注意：这个测试会因为无法完全模拟SDK行为而失败
-     * 我们只测试到日志记录部分，不测试实际的API调用
-     */
-    public function testRequest_logsApiCall(): void
-    {
-        $mall = $this->createMock(Mall::class);
-        $account = $this->createAccountMock('123', 'client_id', 'client_secret');
-        
-        $authLog = $this->createMock(AuthLog::class);
-        $authLog->method('getAccount')->willReturn($account);
-        $authLog->method('getAccessToken')->willReturn('test_access_token');
-        
-        // 设置查询构建器模拟
-        $queryBuilder = $this->createMock(QueryBuilder::class);
-        $queryBuilder->method('where')->willReturnSelf();
-        $queryBuilder->method('setParameter')->willReturnSelf();
-        $queryBuilder->method('orderBy')->willReturnSelf();
-        $queryBuilder->method('setMaxResults')->willReturnSelf();
-        
-        $query = $this->createMock(Query::class);
-        $query->method('getOneOrNullResult')->willReturn($authLog);
-        
-        $queryBuilder->method('getQuery')->willReturn($query);
-        
-        $this->authLogRepository->method('createQueryBuilder')
-            ->willReturn($queryBuilder);
-            
-        $this->urlGenerator->method('generate')->willReturn('https://example.com/callback');
-        $this->kernel->method('getLogDir')->willReturn('/var/log');
-        
-        // 验证日志记录
-        $this->logger->expects($this->once())
-            ->method('info')
-            ->with('发起PDD请求，并获得结果', $this->anything());
-        
-        // 由于无法完全模拟SDK，我们在这里跳过实际的测试
-        $this->markTestSkipped('无法完全模拟SDK行为，跳过实际API调用测试');
-    }
     
     public function testRequest_whenAuthLogNotFound_throwsException(): void
     {
@@ -158,7 +120,7 @@ class SdkServiceTest extends TestCase
         
         $apiName = 'pdd.goods.list.get';
         
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(UnauthorizedException::class);
         $this->expectExceptionMessage("未授权调用：{$apiName}");
         
         $this->sdkService->request($mall, $apiName);

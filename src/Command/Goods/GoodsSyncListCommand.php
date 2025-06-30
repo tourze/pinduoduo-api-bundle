@@ -22,7 +22,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.list.get
  */
-#[AsCronTask('*/30 * * * *')]
+#[AsCronTask(expression: '*/30 * * * *')]
 #[AsCommand(name: self::NAME, description: '同步商品列表接口')]
 class GoodsSyncListCommand extends LockableCommand
 {
