@@ -14,17 +14,21 @@ class SyncOrderListDetailHandler
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly EntityManagerInterface $entityManager,
-    )
-    {
+    ) {
     }
 
     public function __invoke(SyncOrderListDetailMessage $message): void
     {
         $item = $message->getOrderInfo();
-        $order = $this->orderRepository->findOneBy(['orderSn' => $item['order_sn']]);
-        if ($order === null) {
+        $orderSn = $item['order_sn'] ?? null;
+        if (!is_string($orderSn) || '' === $orderSn) {
+            return;
+        }
+
+        $order = $this->orderRepository->findOneBy(['orderSn' => $orderSn]);
+        if (null === $order) {
             $order = new Order();
-            $order->setOrderSn($item['order_sn']);
+            $order->setOrderSn($orderSn);
         }
 
         $this->entityManager->persist($order);

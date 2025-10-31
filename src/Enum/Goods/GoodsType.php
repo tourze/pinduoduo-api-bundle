@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Goods;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.information.get
  */
-enum GoodsType: int implements Labelable, Itemable, Selectable
+enum GoodsType: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -42,6 +43,22 @@ enum GoodsType: int implements Labelable, Itemable, Selectable
             self::QQ充值 => 'QQ充值',
             self::加油卡 => '加油卡',
             self::CC行邮 => 'CC行邮',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::国内普通商品 => 'primary',
+            self::进口 => 'info',
+            self::国外海淘 => 'warning',
+            self::直邮 => 'success',
+            self::流量 => 'secondary',
+            self::话费 => 'secondary',
+            self::优惠券 => 'danger',
+            self::QQ充值 => 'info',
+            self::加油卡 => 'dark',
+            self::CC行邮 => 'light',
         };
     }
 }

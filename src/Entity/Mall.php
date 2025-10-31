@@ -10,48 +10,71 @@ use PinduoduoApiBundle\Enum\MallCharacter;
 use PinduoduoApiBundle\Enum\MerchantType;
 use PinduoduoApiBundle\Repository\MallRepository;
 use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\Arrayable\ApiArrayInterface;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
+/**
+ * @implements ApiArrayInterface<string, mixed>
+ */
 #[ORM\Entity(repositoryClass: MallRepository::class)]
 #[ORM\Table(name: 'ims_pdd_mall', options: ['comment' => '店铺信息'])]
-class Mall implements ApiArrayInterface
-, \Stringable
+class Mall implements ApiArrayInterface, \Stringable
 {
     use TimestampableAware;
     use SnowflakeKeyAware;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 120)]
     #[ORM\Column(length: 120, options: ['comment' => '店铺名称'])]
     private string $name;
 
+    #[Assert\Length(max: 10000)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '店铺描述'])]
     private ?string $description = null;
 
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '店铺logo'])]
     private ?string $logo = null;
 
+    #[Assert\Choice(callback: [MerchantType::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: MerchantType::class, options: ['comment' => '店铺类型'])]
     private ?MerchantType $merchantType = null;
 
+    #[Assert\Choice(callback: [MallCharacter::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: MallCharacter::class, options: ['comment' => '店铺身份'])]
     private ?MallCharacter $mallCharacter = null;
 
+    /**
+     * @var Collection<int, AuthLog>
+     */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'mall', targetEntity: AuthLog::class)]
     private Collection $authLogs;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否签署多多进宝协议'])]
     private ?bool $cpsProtocolStatus = null;
 
+    /**
+     * @var Collection<int, LogisticsTemplate>
+     */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'mall', targetEntity: LogisticsTemplate::class, orphanRemoval: true)]
     private Collection $logisticsTemplates;
 
+    /**
+     * @var Collection<int, Video>
+     */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'mall', targetEntity: Video::class, orphanRemoval: true)]
     private Collection $videos;
 
+    /**
+     * @var Collection<int, AuthCat>
+     */
     #[Ignore]
     #[ORM\OneToMany(mappedBy: 'mall', targetEntity: AuthCat::class, orphanRemoval: true)]
     private Collection $authCats;
@@ -69,11 +92,9 @@ class Mall implements ApiArrayInterface
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -81,11 +102,9 @@ class Mall implements ApiArrayInterface
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function getLogo(): ?string
@@ -93,11 +112,9 @@ class Mall implements ApiArrayInterface
         return $this->logo;
     }
 
-    public function setLogo(?string $logo): static
+    public function setLogo(?string $logo): void
     {
         $this->logo = $logo;
-
-        return $this;
     }
 
     public function getMerchantType(): ?MerchantType
@@ -105,11 +122,9 @@ class Mall implements ApiArrayInterface
         return $this->merchantType;
     }
 
-    public function setMerchantType(?MerchantType $merchantType): static
+    public function setMerchantType(?MerchantType $merchantType): void
     {
         $this->merchantType = $merchantType;
-
-        return $this;
     }
 
     public function getMallCharacter(): ?MallCharacter
@@ -117,11 +132,9 @@ class Mall implements ApiArrayInterface
         return $this->mallCharacter;
     }
 
-    public function setMallCharacter(?MallCharacter $mallCharacter): static
+    public function setMallCharacter(?MallCharacter $mallCharacter): void
     {
         $this->mallCharacter = $mallCharacter;
-
-        return $this;
     }
 
     /**
@@ -159,11 +172,9 @@ class Mall implements ApiArrayInterface
         return $this->cpsProtocolStatus;
     }
 
-    public function setCpsProtocolStatus(?bool $cpsProtocolStatus): static
+    public function setCpsProtocolStatus(?bool $cpsProtocolStatus): void
     {
         $this->cpsProtocolStatus = $cpsProtocolStatus;
-
-        return $this;
     }
 
     /**
@@ -270,6 +281,6 @@ class Mall implements ApiArrayInterface
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Order;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.order.list.get
  */
-enum StockOutHandleStatus: int implements Labelable, Itemable, Selectable
+enum StockOutHandleStatus: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -28,6 +29,15 @@ enum StockOutHandleStatus: int implements Labelable, Itemable, Selectable
             self::无缺货处理 => '预约配送',
             self::缺货待处理 => '缺货待处理',
             self::缺货已处理 => '缺货已处理',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::无缺货处理 => self::INFO,       // 预约配送 - 信息状态
+            self::缺货待处理 => self::WARNING,   // 缺货待处理 - 警告状态
+            self::缺货已处理 => self::SUCCESS,   // 缺货已处理 - 成功状态
         };
     }
 }

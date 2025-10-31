@@ -1,0 +1,10 @@
+services:
+    # DataFixtures services for development environment
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    PinduoduoApiBundle\DataFixtures\:
+        resource: '../../DataFixtures/'
+        tags: ['doctrine.fixture.orm']

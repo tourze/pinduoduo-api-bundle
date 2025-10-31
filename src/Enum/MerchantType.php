@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.mall.info.get
  */
-enum MerchantType: int implements Labelable, Itemable, Selectable
+enum MerchantType: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -34,6 +35,18 @@ enum MerchantType: int implements Labelable, Itemable, Selectable
             self::专卖店 => '专卖店',
             self::专营店 => '专营店',
             self::普通店 => '普通店',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::个人 => BadgeInterface::PRIMARY,
+            self::企业 => BadgeInterface::INFO,
+            self::旗舰店 => BadgeInterface::SUCCESS,
+            self::专卖店 => BadgeInterface::WARNING,
+            self::专营店 => BadgeInterface::SECONDARY,
+            self::普通店 => BadgeInterface::LIGHT,
         };
     }
 }

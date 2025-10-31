@@ -4,11 +4,11 @@ namespace PinduoduoApiBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Enum\ApplicationType;
 use PinduoduoApiBundle\Repository\AccountRepository;
 use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -19,18 +19,28 @@ class Account implements \Stringable
     use TimestampableAware;
     use SnowflakeKeyAware;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     #[ORM\Column(length: 100, options: ['comment' => '应用名称'])]
     private string $title;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 120)]
     #[ORM\Column(length: 120, options: ['comment' => 'ClientID'])]
     private string $clientId;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 120)]
     #[ORM\Column(length: 120, options: ['comment' => 'ClientSecret'])]
     private string $clientSecret;
 
+    #[Assert\Choice(callback: [ApplicationType::class, 'cases'])]
     #[ORM\Column(length: 60, nullable: true, enumType: ApplicationType::class, options: ['comment' => '应用类型'])]
     private ?ApplicationType $applicationType = null;
 
+    /**
+     * @var Collection<int, AuthLog>
+     */
     #[Ignore]
     #[ORM\OneToMany(targetEntity: AuthLog::class, mappedBy: 'account')]
     private Collection $authLogs;
@@ -45,11 +55,9 @@ class Account implements \Stringable
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(string $title): void
     {
         $this->title = $title;
-
-        return $this;
     }
 
     public function getClientId(): ?string
@@ -57,11 +65,9 @@ class Account implements \Stringable
         return $this->clientId;
     }
 
-    public function setClientId(string $clientId): static
+    public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
-
-        return $this;
     }
 
     public function getClientSecret(): string
@@ -69,11 +75,9 @@ class Account implements \Stringable
         return $this->clientSecret;
     }
 
-    public function setClientSecret(string $clientSecret): static
+    public function setClientSecret(string $clientSecret): void
     {
         $this->clientSecret = $clientSecret;
-
-        return $this;
     }
 
     public function getApplicationType(): ?ApplicationType
@@ -81,11 +85,9 @@ class Account implements \Stringable
         return $this->applicationType;
     }
 
-    public function setApplicationType(?ApplicationType $applicationType): static
+    public function setApplicationType(?ApplicationType $applicationType): void
     {
         $this->applicationType = $applicationType;
-
-        return $this;
     }
 
     /**
@@ -117,8 +119,9 @@ class Account implements \Stringable
 
         return $this;
     }
+
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

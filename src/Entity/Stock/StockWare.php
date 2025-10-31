@@ -8,6 +8,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Enum\Stock\StockWareTypeEnum;
 use PinduoduoApiBundle\Repository\Stock\StockWareRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineIndexedBundle\Attribute\IndexColumn;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
@@ -29,83 +30,129 @@ class StockWare implements \Stringable
 
     #[IndexColumn]
     #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '拼多多平台货品ID'])]
+    #[Assert\Length(max: 20)]
     private ?string $wareId = null;
 
     #[IndexColumn]
     #[ORM\Column(type: Types::STRING, length: 50, options: ['comment' => '货品编码'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 50)]
     private string $wareSn;
 
     #[IndexColumn]
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => '货品名称'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private string $wareName;
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '规格'])]
+    #[Assert\Length(max: 50)]
     private ?string $specification = null;
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '单位'])]
+    #[Assert\Length(max: 50)]
     private ?string $unit = null;
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '品牌'])]
+    #[Assert\Length(max: 50)]
     private ?string $brand = null;
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '颜色'])]
+    #[Assert\Length(max: 50)]
     private ?string $color = null;
 
     #[ORM\Column(type: Types::STRING, length: 50, nullable: true, options: ['comment' => '包装'])]
+    #[Assert\Length(max: 50)]
     private ?string $packing = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: ['comment' => '备注'])]
+    #[Assert\Length(max: 255)]
     private ?string $note = null;
 
     #[ORM\Column(type: Types::INTEGER, enumType: StockWareTypeEnum::class, options: ['comment' => '货品类型'])]
+    #[Assert\Choice(callback: [StockWareTypeEnum::class, 'cases'])]
     private StockWareTypeEnum $type = StockWareTypeEnum::NORMAL;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '毛重(kg)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $grossWeight = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '净重(kg)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $netWeight = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '皮重(kg)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $tareWeight = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '重量(kg)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $weight = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '长度(cm)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $length = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '宽度(cm)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $width = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '高度(cm)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $height = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '体积(m³)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $volume = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, options: ['comment' => '价格(元)', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 99999999.99)]
     private float $price = 0;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '服务质量', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 2147483647)]
     private int $serviceQuality = 0;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '库存数量', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 2147483647)]
     private int $quantity = 0;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '货品信息'])]
+    #[Assert\Type(type: 'array')]
     private ?array $wareInfos = null;
 
+    /**
+     * @var Collection<int, StockWareSku>
+     */
     #[ORM\OneToMany(mappedBy: 'stockWare', targetEntity: StockWareSku::class, cascade: ['persist', 'remove'])]
     private Collection $stockWareSkus;
 
+    /**
+     * @var Collection<int, StockWareDepot>
+     */
     #[ORM\OneToMany(mappedBy: 'stockWare', targetEntity: StockWareDepot::class, cascade: ['persist', 'remove'])]
     private Collection $stockWareDepots;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '创建时间戳'])]
+    #[Assert\PositiveOrZero]
     private int $createdAt = 0;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '更新时间戳'])]
+    #[Assert\PositiveOrZero]
     private int $updatedAt = 0;
 
     public function __construct()
@@ -119,10 +166,9 @@ class StockWare implements \Stringable
         return $this->wareId;
     }
 
-    public function setWareId(?string $wareId): self
+    public function setWareId(?string $wareId): void
     {
         $this->wareId = $wareId;
-        return $this;
     }
 
     public function getWareSn(): string
@@ -130,10 +176,9 @@ class StockWare implements \Stringable
         return $this->wareSn;
     }
 
-    public function setWareSn(string $wareSn): self
+    public function setWareSn(string $wareSn): void
     {
         $this->wareSn = $wareSn;
-        return $this;
     }
 
     public function getWareName(): string
@@ -141,10 +186,9 @@ class StockWare implements \Stringable
         return $this->wareName;
     }
 
-    public function setWareName(string $wareName): self
+    public function setWareName(string $wareName): void
     {
         $this->wareName = $wareName;
-        return $this;
     }
 
     public function getSpecification(): ?string
@@ -152,10 +196,9 @@ class StockWare implements \Stringable
         return $this->specification;
     }
 
-    public function setSpecification(?string $specification): self
+    public function setSpecification(?string $specification): void
     {
         $this->specification = $specification;
-        return $this;
     }
 
     public function getUnit(): ?string
@@ -163,10 +206,9 @@ class StockWare implements \Stringable
         return $this->unit;
     }
 
-    public function setUnit(?string $unit): self
+    public function setUnit(?string $unit): void
     {
         $this->unit = $unit;
-        return $this;
     }
 
     public function getBrand(): ?string
@@ -174,10 +216,9 @@ class StockWare implements \Stringable
         return $this->brand;
     }
 
-    public function setBrand(?string $brand): self
+    public function setBrand(?string $brand): void
     {
         $this->brand = $brand;
-        return $this;
     }
 
     public function getColor(): ?string
@@ -185,10 +226,9 @@ class StockWare implements \Stringable
         return $this->color;
     }
 
-    public function setColor(?string $color): self
+    public function setColor(?string $color): void
     {
         $this->color = $color;
-        return $this;
     }
 
     public function getPacking(): ?string
@@ -196,10 +236,9 @@ class StockWare implements \Stringable
         return $this->packing;
     }
 
-    public function setPacking(?string $packing): self
+    public function setPacking(?string $packing): void
     {
         $this->packing = $packing;
-        return $this;
     }
 
     public function getNote(): ?string
@@ -207,10 +246,9 @@ class StockWare implements \Stringable
         return $this->note;
     }
 
-    public function setNote(?string $note): self
+    public function setNote(?string $note): void
     {
         $this->note = $note;
-        return $this;
     }
 
     public function getType(): StockWareTypeEnum
@@ -218,10 +256,9 @@ class StockWare implements \Stringable
         return $this->type;
     }
 
-    public function setType(StockWareTypeEnum $type): self
+    public function setType(StockWareTypeEnum $type): void
     {
         $this->type = $type;
-        return $this;
     }
 
     public function getGrossWeight(): float
@@ -229,10 +266,9 @@ class StockWare implements \Stringable
         return $this->grossWeight;
     }
 
-    public function setGrossWeight(float $grossWeight): self
+    public function setGrossWeight(float $grossWeight): void
     {
         $this->grossWeight = $grossWeight;
-        return $this;
     }
 
     public function getNetWeight(): float
@@ -240,10 +276,9 @@ class StockWare implements \Stringable
         return $this->netWeight;
     }
 
-    public function setNetWeight(float $netWeight): self
+    public function setNetWeight(float $netWeight): void
     {
         $this->netWeight = $netWeight;
-        return $this;
     }
 
     public function getTareWeight(): float
@@ -251,10 +286,9 @@ class StockWare implements \Stringable
         return $this->tareWeight;
     }
 
-    public function setTareWeight(float $tareWeight): self
+    public function setTareWeight(float $tareWeight): void
     {
         $this->tareWeight = $tareWeight;
-        return $this;
     }
 
     public function getWeight(): float
@@ -262,10 +296,9 @@ class StockWare implements \Stringable
         return $this->weight;
     }
 
-    public function setWeight(float $weight): self
+    public function setWeight(float $weight): void
     {
         $this->weight = $weight;
-        return $this;
     }
 
     public function getLength(): float
@@ -273,10 +306,9 @@ class StockWare implements \Stringable
         return $this->length;
     }
 
-    public function setLength(float $length): self
+    public function setLength(float $length): void
     {
         $this->length = $length;
-        return $this;
     }
 
     public function getWidth(): float
@@ -284,10 +316,9 @@ class StockWare implements \Stringable
         return $this->width;
     }
 
-    public function setWidth(float $width): self
+    public function setWidth(float $width): void
     {
         $this->width = $width;
-        return $this;
     }
 
     public function getHeight(): float
@@ -295,10 +326,9 @@ class StockWare implements \Stringable
         return $this->height;
     }
 
-    public function setHeight(float $height): self
+    public function setHeight(float $height): void
     {
         $this->height = $height;
-        return $this;
     }
 
     public function getVolume(): float
@@ -306,10 +336,9 @@ class StockWare implements \Stringable
         return $this->volume;
     }
 
-    public function setVolume(float $volume): self
+    public function setVolume(float $volume): void
     {
         $this->volume = $volume;
-        return $this;
     }
 
     public function getPrice(): float
@@ -317,10 +346,9 @@ class StockWare implements \Stringable
         return $this->price;
     }
 
-    public function setPrice(float $price): self
+    public function setPrice(float $price): void
     {
         $this->price = $price;
-        return $this;
     }
 
     public function getServiceQuality(): int
@@ -328,10 +356,9 @@ class StockWare implements \Stringable
         return $this->serviceQuality;
     }
 
-    public function setServiceQuality(int $serviceQuality): self
+    public function setServiceQuality(int $serviceQuality): void
     {
         $this->serviceQuality = $serviceQuality;
-        return $this;
     }
 
     public function getQuantity(): int
@@ -339,69 +366,67 @@ class StockWare implements \Stringable
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): self
+    public function setQuantity(int $quantity): void
     {
         $this->quantity = $quantity;
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getWareInfos(): ?array
     {
         return $this->wareInfos;
     }
 
-    public function setWareInfos(?array $wareInfos): self
+    /**
+     * @param array<string, mixed>|null $wareInfos
+     */
+    public function setWareInfos(?array $wareInfos): void
     {
         $this->wareInfos = $wareInfos;
-        return $this;
     }
 
+    /**
+     * @return Collection<int, StockWareSku>
+     */
     public function getStockWareSkus(): Collection
     {
         return $this->stockWareSkus;
     }
 
-    public function addStockWareSku(StockWareSku $stockWareSku): self
+    public function addStockWareSku(StockWareSku $stockWareSku): void
     {
         if (!$this->stockWareSkus->contains($stockWareSku)) {
             $this->stockWareSkus->add($stockWareSku);
             $stockWareSku->setStockWare($this);
         }
-        return $this;
     }
 
-    public function removeStockWareSku(StockWareSku $stockWareSku): self
+    public function removeStockWareSku(StockWareSku $stockWareSku): void
     {
-        if ($this->stockWareSkus->removeElement($stockWareSku)) {
-            if ($stockWareSku->getStockWare() === $this) {
-                $stockWareSku->setStockWare(null);
-            }
-        }
-        return $this;
+        $this->stockWareSkus->removeElement($stockWareSku);
     }
 
+    /**
+     * @return Collection<int, StockWareDepot>
+     */
     public function getStockWareDepots(): Collection
     {
         return $this->stockWareDepots;
     }
 
-    public function addStockWareDepot(StockWareDepot $stockWareDepot): self
+    public function addStockWareDepot(StockWareDepot $stockWareDepot): void
     {
         if (!$this->stockWareDepots->contains($stockWareDepot)) {
             $this->stockWareDepots->add($stockWareDepot);
             $stockWareDepot->setStockWare($this);
         }
-        return $this;
     }
 
-    public function removeStockWareDepot(StockWareDepot $stockWareDepot): self
+    public function removeStockWareDepot(StockWareDepot $stockWareDepot): void
     {
-        if ($this->stockWareDepots->removeElement($stockWareDepot)) {
-            if ($stockWareDepot->getStockWare() === $this) {
-                $stockWareDepot->setStockWare(null);
-            }
-        }
-        return $this;
+        $this->stockWareDepots->removeElement($stockWareDepot);
     }
 
     public function getCreatedAt(): int
@@ -409,10 +434,9 @@ class StockWare implements \Stringable
         return $this->createdAt;
     }
 
-    public function setCreatedAt(int $createdAt): self
+    public function setCreatedAt(int $createdAt): void
     {
         $this->createdAt = $createdAt;
-        return $this;
     }
 
     public function getUpdatedAt(): int
@@ -420,15 +444,13 @@ class StockWare implements \Stringable
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(int $updatedAt): self
+    public function setUpdatedAt(int $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
-        return $this;
     }
-
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
-} 
+}

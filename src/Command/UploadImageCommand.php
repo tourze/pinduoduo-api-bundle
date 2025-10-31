@@ -2,9 +2,10 @@
 
 namespace PinduoduoApiBundle\Command;
 
+use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Exception\MallNotFoundException;
 use PinduoduoApiBundle\Repository\MallRepository;
-use PinduoduoApiBundle\Service\SdkService;
+use PinduoduoApiBundle\Service\PinduoduoClient;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,7 +24,7 @@ class UploadImageCommand extends LockableCommand
 
     public function __construct(
         private readonly MallRepository $mallRepository,
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
         private readonly TemporaryFileService $temporaryFileService,
     ) {
         parent::__construct();
@@ -38,15 +39,21 @@ class UploadImageCommand extends LockableCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $mall = $this->mallRepository->find($input->getArgument('mallId'));
-        if ($mall === null) {
+        if (null === $mall) {
             throw new MallNotFoundException('找不到授权店铺');
         }
 
+        $urlArg = $input->getArgument('url');
+        $url = is_string($urlArg) ? $urlArg : '';
+
         $localFile = $this->temporaryFileService->generateTemporaryFileName('pdd');
-        file_put_contents($localFile, file_get_contents($input->getArgument('url')));
+        $content = file_get_contents($url);
+        if (false !== $content) {
+            file_put_contents($localFile, $content);
+        }
         $output->writeln("localFile: {$localFile}");
 
-        $response = $this->sdkService->request($mall, 'pdd.goods.img.upload', [
+        $response = $this->pinduoduoClient->requestByMall($mall, 'pdd.goods.img.upload', [
             'file' => $localFile,
         ]);
         // array:1 [
@@ -55,7 +62,7 @@ class UploadImageCommand extends LockableCommand
         //    "url" => "https://img.pddpic.com/open-gw/2024-05-15/c98022b4-f4ea-4025-9d76-ef1e7f5c119b.jpeg"
         //  ]
         // ]
-        dump($response);
+        // $this->logger->info('上传图片响应', ['response' => $response]);
 
         return Command::SUCCESS;
     }

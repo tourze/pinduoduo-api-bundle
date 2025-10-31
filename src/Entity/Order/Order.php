@@ -16,6 +16,7 @@ use PinduoduoApiBundle\Enum\Order\RiskControlStatus;
 use PinduoduoApiBundle\Enum\Order\StockOutHandleStatus;
 use PinduoduoApiBundle\Enum\Order\TradeType;
 use PinduoduoApiBundle\Repository\Order\OrderRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -26,157 +27,233 @@ class Order implements \Stringable
     use SnowflakeKeyAware;
     use TimestampableAware;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     #[ORM\Column(length: 64, options: ['comment' => '订单号'])]
     private ?string $orderSn = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '收件详细地址(加密)'])]
     private ?string $addressEncrypted = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '收件详细地址(打码)'])]
     private ?string $addressMask = null;
 
+    #[Assert\Choice(callback: [AfterSalesStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: AfterSalesStatus::class, options: ['comment' => '售后状态'])]
     private ?AfterSalesStatus $afterSalesStatus = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '买家留言信息'])]
     private ?string $buyerMemo = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(options: ['comment' => '商品分类'])]
     private ?Category $category = null;
 
+    #[Assert\Length(max: 100)]
     #[ORM\Column(length: 100, nullable: true, options: ['comment' => '保税仓库'])]
     private ?string $bondedWarehouse = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(nullable: true, options: ['comment' => '团长免单金额，单位：元'])]
     private ?string $capitalFreeDiscount = null;
 
+    #[Assert\Choice(callback: [ConfirmStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: ConfirmStatus::class, options: ['comment' => '成交状态'])]
     private ?ConfirmStatus $confirmStatus = null;
 
+    #[Assert\Type(type: 'DateTimeInterface')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '成交时间'])]
     private ?\DateTimeInterface $confirmTime = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '全国联保'])]
     private ?bool $supportNationwideWarranty = null;
 
+    #[Assert\Choice(callback: [GroupStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: GroupStatus::class, options: ['comment' => '成团状态'])]
     private ?GroupStatus $groupStatus = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '顺丰包邮'])]
     private ?bool $freeSf = null;
 
     /**
      * @var float|null 折扣金额=平台优惠+商家优惠+团长免单优惠金额
      */
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
+    #[Assert\Range(min: 0, max: 100)]
     #[ORM\Column(nullable: true, options: ['comment' => '折扣金额'])]
     private ?float $discountAmount = null;
 
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
+    #[Assert\Range(min: 0, max: 100)]
     #[ORM\Column(nullable: true, options: ['comment' => '平台优惠金额'])]
     private ?float $platformDiscount = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '退货包运费'])]
     private ?bool $returnFreightPayer = null;
 
+    #[Assert\Choice(callback: [OrderStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: OrderStatus::class, options: ['comment' => '发货状态'])]
     private ?OrderStatus $orderStatus = null;
 
+    #[Assert\Choice(callback: [RiskControlStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: RiskControlStatus::class, options: ['comment' => '订单审核状态'])]
     private ?RiskControlStatus $riskControlStatus = null;
 
+    #[Assert\Type(type: 'DateTimeInterface')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '订单承诺发货时间'])]
     private ?\DateTimeInterface $lastShipTime = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否当日发货'])]
     private ?bool $deliveryOneDay = null;
 
+    /**
+     * @var array<mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '卡号信息列表'])]
     private ?array $cardInfoList = null;
 
+    #[Assert\Choice(callback: [RefundStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: RefundStatus::class, options: ['comment' => '售后状态'])]
     private ?RefundStatus $refundStatus = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否缺货'])]
     private ?bool $stockOut = null;
 
+    #[Assert\Type(type: 'DateTimeInterface')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '确认收货时间'])]
     private ?\DateTimeInterface $receiveTime = null;
 
+    #[Assert\Type(type: 'DateTimeInterface')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '支付时间'])]
     private ?\DateTimeInterface $payTime = null;
 
+    /**
+     * @var array<mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '赠品列表'])]
     private ?array $giftList = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '发票申请'])]
     private ?bool $invoiceStatus = null;
 
+    /**
+     * @var array<mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '服务费明细列表'])]
     private ?array $serviceFeeDetail = null;
 
+    /**
+     * @var array<mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '订单标签列表'])]
     private ?array $orderTagList = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否是抽奖订单'])]
     private ?bool $luckyFlag = null;
 
+    #[Assert\Choice(callback: [MktBizType::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: MktBizType::class, options: ['comment' => '市场业务类型'])]
     private ?MktBizType $mktBizType = null;
 
+    #[Assert\Type(type: 'int')]
     #[ORM\Column(nullable: true, options: ['comment' => '创建交易时的物流方式'])]
     private ?int $shippingType = null;
 
+    #[Assert\Length(max: 1000)]
     #[ORM\Column(length: 1000, nullable: true, options: ['comment' => '订单备注'])]
     private ?string $remark = null;
 
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
     #[ORM\Column(nullable: true, options: ['comment' => '订单改价折扣金额'])]
     private ?float $orderChangeAmount = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '只换不修'])]
     private ?bool $onlySupportReplace = null;
 
+    #[Assert\Length(max: 64)]
     #[ORM\Column(length: 64, nullable: true, options: ['comment' => '运单号'])]
     private ?string $trackingNumber = null;
 
+    #[Assert\Choice(callback: [PayType::class, 'cases'])]
     #[ORM\Column(length: 40, nullable: true, enumType: PayType::class, options: ['comment' => '支付方式'])]
     private ?PayType $payType = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否多多批发'])]
     private ?bool $duoduoWholesale = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否为预售商品'])]
     private ?bool $preSale = null;
 
+    #[Assert\Type(type: 'DateTimeInterface')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '发货时间'])]
     private ?\DateTimeInterface $shippingTime = null;
 
     /**
      * @var float|null 商品金额=商品销售价格*商品数量-订单改价折扣金额
      */
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品金额'])]
     private ?float $goodsAmount = null;
 
     /**
      * @var float|null 支付金额=商品金额-折扣金额+邮费+服务费
      */
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
     #[ORM\Column(nullable: true, options: ['comment' => '支付金额'])]
     private ?float $payAmount = null;
 
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
+    #[Assert\Range(min: 0, max: 100)]
     #[ORM\Column(nullable: true, options: ['comment' => '商家优惠金额'])]
     private ?float $sellerDiscount = null;
 
+    #[Assert\Choice(callback: [StockOutHandleStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: StockOutHandleStatus::class, options: ['comment' => '缺货处理状态'])]
     private ?StockOutHandleStatus $stockOutHandleStatus = null;
 
+    #[Assert\PositiveOrZero]
+    #[Assert\Type(type: 'float')]
     #[ORM\Column(nullable: true, options: ['comment' => '邮费'])]
     private ?float $postage = null;
 
+    #[Assert\Choice(callback: [TradeType::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: TradeType::class, options: ['comment' => '订单类型'])]
     private ?TradeType $tradeType = null;
 
+    /**
+     * @var array<mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '订单商品列表'])]
     private ?array $itemList = null;
 
+    /**
+     * @var array<mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => '上下文'])]
     private ?array $context = [];
 
@@ -185,11 +262,9 @@ class Order implements \Stringable
         return $this->orderSn;
     }
 
-    public function setOrderSn(string $orderSn): static
+    public function setOrderSn(string $orderSn): void
     {
         $this->orderSn = $orderSn;
-
-        return $this;
     }
 
     public function getAddressEncrypted(): ?string
@@ -197,11 +272,9 @@ class Order implements \Stringable
         return $this->addressEncrypted;
     }
 
-    public function setAddressEncrypted(?string $addressEncrypted): static
+    public function setAddressEncrypted(?string $addressEncrypted): void
     {
         $this->addressEncrypted = $addressEncrypted;
-
-        return $this;
     }
 
     public function getAddressMask(): ?string
@@ -209,11 +282,9 @@ class Order implements \Stringable
         return $this->addressMask;
     }
 
-    public function setAddressMask(?string $addressMask): static
+    public function setAddressMask(?string $addressMask): void
     {
         $this->addressMask = $addressMask;
-
-        return $this;
     }
 
     public function getAfterSalesStatus(): ?AfterSalesStatus
@@ -221,11 +292,9 @@ class Order implements \Stringable
         return $this->afterSalesStatus;
     }
 
-    public function setAfterSalesStatus(?AfterSalesStatus $afterSalesStatus): static
+    public function setAfterSalesStatus(?AfterSalesStatus $afterSalesStatus): void
     {
         $this->afterSalesStatus = $afterSalesStatus;
-
-        return $this;
     }
 
     public function getBuyerMemo(): ?string
@@ -233,11 +302,9 @@ class Order implements \Stringable
         return $this->buyerMemo;
     }
 
-    public function setBuyerMemo(?string $buyerMemo): static
+    public function setBuyerMemo(?string $buyerMemo): void
     {
         $this->buyerMemo = $buyerMemo;
-
-        return $this;
     }
 
     public function getCategory(): ?Category
@@ -245,11 +312,9 @@ class Order implements \Stringable
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(?Category $category): void
     {
         $this->category = $category;
-
-        return $this;
     }
 
     public function getBondedWarehouse(): ?string
@@ -257,11 +322,9 @@ class Order implements \Stringable
         return $this->bondedWarehouse;
     }
 
-    public function setBondedWarehouse(?string $bondedWarehouse): static
+    public function setBondedWarehouse(?string $bondedWarehouse): void
     {
         $this->bondedWarehouse = $bondedWarehouse;
-
-        return $this;
     }
 
     public function getCapitalFreeDiscount(): ?string
@@ -269,11 +332,9 @@ class Order implements \Stringable
         return $this->capitalFreeDiscount;
     }
 
-    public function setCapitalFreeDiscount(?string $capital_free_discount): static
+    public function setCapitalFreeDiscount(?string $capital_free_discount): void
     {
         $this->capitalFreeDiscount = $capital_free_discount;
-
-        return $this;
     }
 
     public function getConfirmStatus(): ?ConfirmStatus
@@ -281,11 +342,9 @@ class Order implements \Stringable
         return $this->confirmStatus;
     }
 
-    public function setConfirmStatus(?ConfirmStatus $confirmStatus): static
+    public function setConfirmStatus(?ConfirmStatus $confirmStatus): void
     {
         $this->confirmStatus = $confirmStatus;
-
-        return $this;
     }
 
     public function getConfirmTime(): ?\DateTimeInterface
@@ -293,11 +352,9 @@ class Order implements \Stringable
         return $this->confirmTime;
     }
 
-    public function setConfirmTime(?\DateTimeInterface $confirmTime): static
+    public function setConfirmTime(?\DateTimeInterface $confirmTime): void
     {
         $this->confirmTime = $confirmTime;
-
-        return $this;
     }
 
     public function isSupportNationwideWarranty(): ?bool
@@ -305,11 +362,9 @@ class Order implements \Stringable
         return $this->supportNationwideWarranty;
     }
 
-    public function setSupportNationwideWarranty(?bool $supportNationwideWarranty): static
+    public function setSupportNationwideWarranty(?bool $supportNationwideWarranty): void
     {
         $this->supportNationwideWarranty = $supportNationwideWarranty;
-
-        return $this;
     }
 
     public function getGroupStatus(): ?GroupStatus
@@ -317,11 +372,9 @@ class Order implements \Stringable
         return $this->groupStatus;
     }
 
-    public function setGroupStatus(?GroupStatus $groupStatus): static
+    public function setGroupStatus(?GroupStatus $groupStatus): void
     {
         $this->groupStatus = $groupStatus;
-
-        return $this;
     }
 
     public function isFreeSf(): ?bool
@@ -329,11 +382,9 @@ class Order implements \Stringable
         return $this->freeSf;
     }
 
-    public function setFreeSf(?bool $freeSf): static
+    public function setFreeSf(?bool $freeSf): void
     {
         $this->freeSf = $freeSf;
-
-        return $this;
     }
 
     public function getDiscountAmount(): ?float
@@ -341,11 +392,9 @@ class Order implements \Stringable
         return $this->discountAmount;
     }
 
-    public function setDiscountAmount(?float $discountAmount): static
+    public function setDiscountAmount(?float $discountAmount): void
     {
         $this->discountAmount = $discountAmount;
-
-        return $this;
     }
 
     public function getPlatformDiscount(): ?float
@@ -353,11 +402,9 @@ class Order implements \Stringable
         return $this->platformDiscount;
     }
 
-    public function setPlatformDiscount(?float $platformDiscount): static
+    public function setPlatformDiscount(?float $platformDiscount): void
     {
         $this->platformDiscount = $platformDiscount;
-
-        return $this;
     }
 
     public function isReturnFreightPayer(): ?bool
@@ -365,11 +412,9 @@ class Order implements \Stringable
         return $this->returnFreightPayer;
     }
 
-    public function setReturnFreightPayer(?bool $returnFreightPayer): static
+    public function setReturnFreightPayer(?bool $returnFreightPayer): void
     {
         $this->returnFreightPayer = $returnFreightPayer;
-
-        return $this;
     }
 
     public function getOrderStatus(): ?OrderStatus
@@ -377,11 +422,9 @@ class Order implements \Stringable
         return $this->orderStatus;
     }
 
-    public function setOrderStatus(?OrderStatus $orderStatus): static
+    public function setOrderStatus(?OrderStatus $orderStatus): void
     {
         $this->orderStatus = $orderStatus;
-
-        return $this;
     }
 
     public function getRiskControlStatus(): ?RiskControlStatus
@@ -389,11 +432,9 @@ class Order implements \Stringable
         return $this->riskControlStatus;
     }
 
-    public function setRiskControlStatus(?RiskControlStatus $riskControlStatus): static
+    public function setRiskControlStatus(?RiskControlStatus $riskControlStatus): void
     {
         $this->riskControlStatus = $riskControlStatus;
-
-        return $this;
     }
 
     public function getLastShipTime(): ?\DateTimeInterface
@@ -401,11 +442,9 @@ class Order implements \Stringable
         return $this->lastShipTime;
     }
 
-    public function setLastShipTime(?\DateTimeInterface $lastShipTime): static
+    public function setLastShipTime(?\DateTimeInterface $lastShipTime): void
     {
         $this->lastShipTime = $lastShipTime;
-
-        return $this;
     }
 
     public function isDeliveryOneDay(): ?bool
@@ -413,23 +452,25 @@ class Order implements \Stringable
         return $this->deliveryOneDay;
     }
 
-    public function setDeliveryOneDay(?bool $deliveryOneDay): static
+    public function setDeliveryOneDay(?bool $deliveryOneDay): void
     {
         $this->deliveryOneDay = $deliveryOneDay;
-
-        return $this;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getCardInfoList(): ?array
     {
         return $this->cardInfoList;
     }
 
-    public function setCardInfoList(?array $cardInfoList): static
+    /**
+     * @param array<mixed>|null $cardInfoList
+     */
+    public function setCardInfoList(?array $cardInfoList): void
     {
         $this->cardInfoList = $cardInfoList;
-
-        return $this;
     }
 
     public function getRefundStatus(): ?RefundStatus
@@ -437,11 +478,9 @@ class Order implements \Stringable
         return $this->refundStatus;
     }
 
-    public function setRefundStatus(?RefundStatus $refundStatus): static
+    public function setRefundStatus(?RefundStatus $refundStatus): void
     {
         $this->refundStatus = $refundStatus;
-
-        return $this;
     }
 
     public function isStockOut(): ?bool
@@ -449,11 +488,14 @@ class Order implements \Stringable
         return $this->stockOut;
     }
 
-    public function setStockOut(?bool $stockOut): static
+    public function getStockOut(): ?bool
+    {
+        return $this->stockOut;
+    }
+
+    public function setStockOut(?bool $stockOut): void
     {
         $this->stockOut = $stockOut;
-
-        return $this;
     }
 
     public function getReceiveTime(): ?\DateTimeInterface
@@ -461,11 +503,9 @@ class Order implements \Stringable
         return $this->receiveTime;
     }
 
-    public function setReceiveTime(?\DateTimeInterface $receiveTime): static
+    public function setReceiveTime(?\DateTimeInterface $receiveTime): void
     {
         $this->receiveTime = $receiveTime;
-
-        return $this;
     }
 
     public function getPayTime(): ?\DateTimeInterface
@@ -473,23 +513,25 @@ class Order implements \Stringable
         return $this->payTime;
     }
 
-    public function setPayTime(?\DateTimeInterface $payTime): static
+    public function setPayTime(?\DateTimeInterface $payTime): void
     {
         $this->payTime = $payTime;
-
-        return $this;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getGiftList(): ?array
     {
         return $this->giftList;
     }
 
-    public function setGiftList(?array $giftList): static
+    /**
+     * @param array<mixed>|null $giftList
+     */
+    public function setGiftList(?array $giftList): void
     {
         $this->giftList = $giftList;
-
-        return $this;
     }
 
     public function isInvoiceStatus(): ?bool
@@ -497,35 +539,41 @@ class Order implements \Stringable
         return $this->invoiceStatus;
     }
 
-    public function setInvoiceStatus(?bool $invoiceStatus): static
+    public function setInvoiceStatus(?bool $invoiceStatus): void
     {
         $this->invoiceStatus = $invoiceStatus;
-
-        return $this;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getServiceFeeDetail(): ?array
     {
         return $this->serviceFeeDetail;
     }
 
-    public function setServiceFeeDetail(?array $serviceFeeDetail): static
+    /**
+     * @param array<mixed>|null $serviceFeeDetail
+     */
+    public function setServiceFeeDetail(?array $serviceFeeDetail): void
     {
         $this->serviceFeeDetail = $serviceFeeDetail;
-
-        return $this;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getOrderTagList(): ?array
     {
         return $this->orderTagList;
     }
 
-    public function setOrderTagList(?array $orderTagList): static
+    /**
+     * @param array<mixed>|null $orderTagList
+     */
+    public function setOrderTagList(?array $orderTagList): void
     {
         $this->orderTagList = $orderTagList;
-
-        return $this;
     }
 
     public function isLuckyFlag(): ?bool
@@ -533,11 +581,9 @@ class Order implements \Stringable
         return $this->luckyFlag;
     }
 
-    public function setLuckyFlag(?bool $luckyFlag): static
+    public function setLuckyFlag(?bool $luckyFlag): void
     {
         $this->luckyFlag = $luckyFlag;
-
-        return $this;
     }
 
     public function getMktBizType(): ?MktBizType
@@ -545,11 +591,9 @@ class Order implements \Stringable
         return $this->mktBizType;
     }
 
-    public function setMktBizType(?MktBizType $mktBizType): static
+    public function setMktBizType(?MktBizType $mktBizType): void
     {
         $this->mktBizType = $mktBizType;
-
-        return $this;
     }
 
     public function getShippingType(): ?int
@@ -557,11 +601,9 @@ class Order implements \Stringable
         return $this->shippingType;
     }
 
-    public function setShippingType(?int $shippingType): static
+    public function setShippingType(?int $shippingType): void
     {
         $this->shippingType = $shippingType;
-
-        return $this;
     }
 
     public function getRemark(): ?string
@@ -569,11 +611,9 @@ class Order implements \Stringable
         return $this->remark;
     }
 
-    public function setRemark(?string $remark): static
+    public function setRemark(?string $remark): void
     {
         $this->remark = $remark;
-
-        return $this;
     }
 
     public function getOrderChangeAmount(): ?float
@@ -581,11 +621,9 @@ class Order implements \Stringable
         return $this->orderChangeAmount;
     }
 
-    public function setOrderChangeAmount(?float $orderChangeAmount): static
+    public function setOrderChangeAmount(?float $orderChangeAmount): void
     {
         $this->orderChangeAmount = $orderChangeAmount;
-
-        return $this;
     }
 
     public function isOnlySupportReplace(): ?bool
@@ -593,11 +631,9 @@ class Order implements \Stringable
         return $this->onlySupportReplace;
     }
 
-    public function setOnlySupportReplace(?bool $onlySupportReplace): static
+    public function setOnlySupportReplace(?bool $onlySupportReplace): void
     {
         $this->onlySupportReplace = $onlySupportReplace;
-
-        return $this;
     }
 
     public function getTrackingNumber(): ?string
@@ -605,11 +641,9 @@ class Order implements \Stringable
         return $this->trackingNumber;
     }
 
-    public function setTrackingNumber(?string $trackingNumber): static
+    public function setTrackingNumber(?string $trackingNumber): void
     {
         $this->trackingNumber = $trackingNumber;
-
-        return $this;
     }
 
     public function getPayType(): ?PayType
@@ -617,11 +651,9 @@ class Order implements \Stringable
         return $this->payType;
     }
 
-    public function setPayType(?PayType $payType): static
+    public function setPayType(?PayType $payType): void
     {
         $this->payType = $payType;
-
-        return $this;
     }
 
     public function isDuoduoWholesale(): ?bool
@@ -629,11 +661,9 @@ class Order implements \Stringable
         return $this->duoduoWholesale;
     }
 
-    public function setDuoduoWholesale(?bool $duoduoWholesale): static
+    public function setDuoduoWholesale(?bool $duoduoWholesale): void
     {
         $this->duoduoWholesale = $duoduoWholesale;
-
-        return $this;
     }
 
     public function isPreSale(): ?bool
@@ -641,11 +671,14 @@ class Order implements \Stringable
         return $this->preSale;
     }
 
-    public function setPreSale(?bool $preSale): static
+    public function getPreSale(): ?bool
+    {
+        return $this->preSale;
+    }
+
+    public function setPreSale(?bool $preSale): void
     {
         $this->preSale = $preSale;
-
-        return $this;
     }
 
     public function getShippingTime(): ?\DateTimeInterface
@@ -653,11 +686,9 @@ class Order implements \Stringable
         return $this->shippingTime;
     }
 
-    public function setShippingTime(?\DateTimeInterface $shippingTime): static
+    public function setShippingTime(?\DateTimeInterface $shippingTime): void
     {
         $this->shippingTime = $shippingTime;
-
-        return $this;
     }
 
     public function getGoodsAmount(): ?float
@@ -665,11 +696,9 @@ class Order implements \Stringable
         return $this->goodsAmount;
     }
 
-    public function setGoodsAmount(?float $goodsAmount): static
+    public function setGoodsAmount(?float $goodsAmount): void
     {
         $this->goodsAmount = $goodsAmount;
-
-        return $this;
     }
 
     public function getPayAmount(): ?float
@@ -677,11 +706,9 @@ class Order implements \Stringable
         return $this->payAmount;
     }
 
-    public function setPayAmount(?float $payAmount): static
+    public function setPayAmount(?float $payAmount): void
     {
         $this->payAmount = $payAmount;
-
-        return $this;
     }
 
     public function getSellerDiscount(): ?float
@@ -689,11 +716,9 @@ class Order implements \Stringable
         return $this->sellerDiscount;
     }
 
-    public function setSellerDiscount(?float $sellerDiscount): static
+    public function setSellerDiscount(?float $sellerDiscount): void
     {
         $this->sellerDiscount = $sellerDiscount;
-
-        return $this;
     }
 
     public function getStockOutHandleStatus(): ?StockOutHandleStatus
@@ -701,11 +726,9 @@ class Order implements \Stringable
         return $this->stockOutHandleStatus;
     }
 
-    public function setStockOutHandleStatus(?StockOutHandleStatus $stockOutHandleStatus): static
+    public function setStockOutHandleStatus(?StockOutHandleStatus $stockOutHandleStatus): void
     {
         $this->stockOutHandleStatus = $stockOutHandleStatus;
-
-        return $this;
     }
 
     public function getPostage(): ?float
@@ -713,11 +736,9 @@ class Order implements \Stringable
         return $this->postage;
     }
 
-    public function setPostage(?float $postage): static
+    public function setPostage(?float $postage): void
     {
         $this->postage = $postage;
-
-        return $this;
     }
 
     public function getTradeType(): ?TradeType
@@ -725,38 +746,45 @@ class Order implements \Stringable
         return $this->tradeType;
     }
 
-    public function setTradeType(?TradeType $tradeType): static
+    public function setTradeType(?TradeType $tradeType): void
     {
         $this->tradeType = $tradeType;
-
-        return $this;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getItemList(): ?array
     {
         return $this->itemList;
     }
 
-    public function setItemList(?array $itemList): static
+    /**
+     * @param array<mixed>|null $itemList
+     */
+    public function setItemList(?array $itemList): void
     {
         $this->itemList = $itemList;
-
-        return $this;
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getContext(): ?array
     {
         return $this->context;
     }
 
-    public function setContext(?array $context): self
+    /**
+     * @param array<mixed>|null $context
+     */
+    public function setContext(?array $context): void
     {
         $this->context = $context;
-
-        return $this;
     }
+
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

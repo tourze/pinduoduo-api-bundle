@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Order;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.order.information.get
  */
-enum AfterSalesStatus: int implements Labelable, Itemable, Selectable
+enum AfterSalesStatus: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -74,6 +75,38 @@ enum AfterSalesStatus: int implements Labelable, Itemable, Selectable
             self::已同意拒收退款，待用户拒收 => '已同意拒收退款，待用户拒收',
             self::补寄待商家发货 => '补寄待商家发货',
             self::同意召回后退款，待商家召回 => '同意召回后退款，待商家召回',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::无售后 => self::SUCCESS,                          // 无售后 - 成功状态
+            self::买家申请退款，待商家处理 => self::WARNING,           // 待处理 - 警告状态
+            self::退货退款，待商家处理 => self::WARNING,            // 待处理 - 警告状态
+            self::商家同意退款，退款中 => self::PRIMARY,             // 进行中 - 主要状态
+            self::平台同意退款，退款中 => self::PRIMARY,             // 进行中 - 主要状态
+            self::驳回退款，待买家处理 => self::DANGER,               // 驳回 - 危险状态
+            self::已同意退货退款，待用户发货 => self::INFO,               // 待用户操作 - 信息状态
+            self::平台处理中 => self::PRIMARY,                       // 处理中 - 主要状态
+            self::平台拒绝退款，退款关闭 => self::DARK,                 // 关闭 - 深色状态
+            self::退款成功 => self::SUCCESS,                          // 成功 - 成功状态
+            self::买家撤销 => self::SECONDARY,                        // 撤销 - 次要状态
+            self::买家逾期未处理，退款失败 => self::DANGER,              // 失败 - 危险状态
+            self::买家逾期，超过有效期 => self::DANGER,                // 逾期 - 危险状态
+            self::换货补寄待商家处理 => self::WARNING,               // 待处理 - 警告状态
+            self::换货补寄待用户处理 => self::INFO,                  // 待用户操作 - 信息状态
+            self::换货补寄成功 => self::SUCCESS,                      // 成功 - 成功状态
+            self::换货补寄失败 => self::DANGER,                       // 失败 - 危险状态
+            self::换货补寄待用户确认完成 => self::INFO,               // 待确认 - 信息状态
+            self::待商家同意维修 => self::WARNING,                     // 待同意 - 警告状态
+            self::待用户确认发货 => self::INFO,                        // 待确认 - 信息状态
+            self::维修关闭 => self::DARK,                             // 关闭 - 深色状态
+            self::维修成功 => self::SUCCESS,                          // 成功 - 成功状态
+            self::待用户确认收货 => self::INFO,                        // 待确认 - 信息状态
+            self::已同意拒收退款，待用户拒收 => self::INFO,              // 待拒收 - 信息状态
+            self::补寄待商家发货 => self::WARNING,                     // 待发货 - 警告状态
+            self::同意召回后退款，待商家召回 => self::WARNING,             // 待召回 - 警告状态
         };
     }
 }

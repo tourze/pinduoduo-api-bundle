@@ -8,11 +8,13 @@ use PinduoduoApiBundle\Service\CategoryService;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
 use Tourze\JsonRPC\Core\Attribute\MethodParam;
+use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 
 #[MethodDoc(summary: '商品属性类目接口')]
 #[MethodExpose(method: 'GetPddGoodsSpecList')]
+#[MethodTag(name: '拼多多API')]
 class GetPddGoodsSpecList extends LockableProcedure
 {
     public function __construct(
@@ -28,27 +30,32 @@ class GetPddGoodsSpecList extends LockableProcedure
     #[MethodParam(description: '分类ID')]
     public string $categoryId;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function execute(): array
     {
         $mall = $this->mallRepository->find($this->mallId);
-        if ($mall === null) {
+        if (null === $mall) {
             throw new ApiException('找不到店铺信息');
         }
 
         $category = $this->categoryRepository->find($this->categoryId);
-        if ($category === null) {
+        if (null === $category) {
             throw new ApiException('找不到分类信息');
         }
         $this->categoryService->syncSpecList($mall, $category);
 
-        $result = [];
+        $list = [];
         foreach ($category->getSpecs() as $spec) {
-            $result[] = [
+            $list[] = [
                 'parent_spec_id' => $spec->getId(),
                 'parent_spec_name' => $spec->getName(),
             ];
         }
 
-        return $result;
+        return [
+            'list' => $list,
+        ];
     }
 }

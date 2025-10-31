@@ -2,19 +2,20 @@
 
 namespace PinduoduoApiBundle\Controller\Auth;
 
+use PinduoduoApiBundle\Entity\Account;
 use PinduoduoApiBundle\Repository\AccountRepository;
-use PinduoduoApiBundle\Service\SdkService;
+use PinduoduoApiBundle\Service\PinduoduoClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-class RedirectController extends AbstractController
+final class RedirectController extends AbstractController
 {
     public function __construct(
         private readonly AccountRepository $accountRepository,
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
     ) {
     }
 
@@ -24,12 +25,11 @@ class RedirectController extends AbstractController
         $account = $this->accountRepository->findOneBy([
             'id' => $id,
         ]);
-        if ($account === null) {
+        if (!$account instanceof Account) {
             throw new NotFoundHttpException('找不到应用');
         }
 
-        $sdk = $this->sdkService->getMerchantSdk($account);
-        $url = $sdk->pre_auth->authorizationUrl();
+        $url = $this->pinduoduoClient->generateAuthUrl($account);
         $response = $this->redirect($url);
 
         // 需要保存当时回调的地址

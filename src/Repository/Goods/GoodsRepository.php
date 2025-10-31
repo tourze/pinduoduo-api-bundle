@@ -5,17 +5,32 @@ namespace PinduoduoApiBundle\Repository\Goods;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PinduoduoApiBundle\Entity\Goods\Goods;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 
 /**
- * @method Goods|null find($id, $lockMode = null, $lockVersion = null)
- * @method Goods|null findOneBy(array $criteria, array $orderBy = null)
- * @method Goods[] findAll()
- * @method Goods[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<Goods>
  */
+#[AsRepository(entityClass: Goods::class)]
 class GoodsRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Goods::class);
+    }
+
+    public function save(Goods $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Goods $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

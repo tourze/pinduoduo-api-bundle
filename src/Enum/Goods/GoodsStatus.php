@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Goods;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.detail.get
  */
-enum GoodsStatus: int implements Labelable, Itemable, Selectable
+enum GoodsStatus: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -30,6 +31,16 @@ enum GoodsStatus: int implements Labelable, Itemable, Selectable
             self::Down => '下架',
             self::Out => '售罄',
             self::Deleted => '已删除',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::Up => self::SUCCESS,      // 上架 - 成功状态
+            self::Down => self::WARNING,    // 下架 - 警告状态
+            self::Out => self::SECONDARY,   // 售罄 - 次要状态
+            self::Deleted => self::DANGER,  // 已删除 - 危险状态
         };
     }
 }

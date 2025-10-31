@@ -4,9 +4,9 @@ namespace PinduoduoApiBundle\Entity\Goods;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\SpecRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -20,9 +20,14 @@ class Spec implements \Stringable
     use SnowflakeKeyAware;
     use TimestampableAware;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     #[ORM\Column(length: 100, options: ['comment' => '规格名称'])]
     private ?string $name = null;
 
+    /**
+     * @var Collection<int, Category>
+     */
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'specs', fetch: 'EXTRA_LAZY')]
     private Collection $categories;
 
@@ -36,11 +41,9 @@ class Spec implements \Stringable
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -62,13 +65,15 @@ class Spec implements \Stringable
 
     public function removeCategory(Category $category): static
     {
-        $this->categories->removeElement($category);
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+        }
 
         return $this;
     }
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

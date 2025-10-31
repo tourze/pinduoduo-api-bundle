@@ -3,11 +3,12 @@
 namespace PinduoduoApiBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
 use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Enum\MallCharacter;
 use PinduoduoApiBundle\Enum\MerchantType;
 use PinduoduoApiBundle\Repository\MallRepository;
-use PinduoduoApiBundle\Service\SdkService;
+use PinduoduoApiBundle\Service\PinduoduoClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,6 +23,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask(expression: '*/30 */2 * * *')]
 #[AsCommand(name: self::NAME, description: '同步店铺信息')]
+#[WithMonologChannel(channel: 'pinduoduo_api')]
 class MallInfoSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-mall-info-list';
@@ -29,7 +31,7 @@ class MallInfoSyncCommand extends LockableCommand
     public function __construct(
         private readonly MallRepository $mallRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
         private readonly LoggerInterface $logger,
     ) {
         parent::__construct();
@@ -42,9 +44,10 @@ class MallInfoSyncCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if ($input->getArgument('mallId') !== null) {
+        $mallIdArg = $input->getArgument('mallId');
+        if (null !== $mallIdArg && is_string($mallIdArg)) {
             $malls = $this->mallRepository->findBy([
-                'id' => explode(',', $input->getArgument('mallId')),
+                'id' => explode(',', $mallIdArg),
             ]);
         } else {
             $malls = $this->mallRepository->findAll();
@@ -64,19 +67,33 @@ class MallInfoSyncCommand extends LockableCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @internal
+     */
     public function syncInfo(Mall $mall): void
     {
-        $response = $this->sdkService->request($mall, 'pdd.mall.info.get');
+        $response = $this->pinduoduoClient->requestByMall($mall, 'pdd.mall.info.get');
         $this->logger->info('同步PDD店铺信息', [
             'response' => $response,
             'mall' => $mall,
         ]);
-        $response = $response['mall_info_get_response'];
-        $mall->setName($response['mall_name']);
-        $mall->setDescription($response['mall_desc']);
-        $mall->setLogo($response['logo']);
-        $mall->setMerchantType(MerchantType::tryFrom($response['merchant_type']));
-        $mall->setMallCharacter(MallCharacter::tryFrom($response['mall_character']));
+
+        $mallInfo = $response['mall_info_get_response'] ?? [];
+        assert(is_array($mallInfo));
+
+        $mallName = $mallInfo['mall_name'] ?? null;
+        if (is_string($mallName) && '' !== $mallName) {
+            $mall->setName($mallName);
+        }
+        $mall->setDescription(is_string($mallInfo['mall_desc'] ?? null) ? $mallInfo['mall_desc'] : null);
+        $mall->setLogo(is_string($mallInfo['logo'] ?? null) ? $mallInfo['logo'] : null);
+
+        $merchantType = $mallInfo['merchant_type'] ?? null;
+        $mall->setMerchantType((is_int($merchantType) || is_string($merchantType)) ? MerchantType::tryFrom($merchantType) : null);
+
+        $mallCharacter = $mallInfo['mall_character'] ?? null;
+        $mall->setMallCharacter((is_int($mallCharacter) || is_string($mallCharacter)) ? MallCharacter::tryFrom($mallCharacter) : null);
+
         $this->entityManager->persist($mall);
         $this->entityManager->flush();
     }

@@ -2,10 +2,10 @@
 
 namespace PinduoduoApiBundle\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Enum\CostType;
 use PinduoduoApiBundle\Repository\LogisticsTemplateRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -16,13 +16,16 @@ class LogisticsTemplate implements \Stringable
     use TimestampableAware;
     use SnowflakeKeyAware;
 
-    #[ORM\ManyToOne(inversedBy: 'logisticsTemplates')]
+    #[ORM\ManyToOne(inversedBy: 'logisticsTemplates', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Mall $mall = null;
 
+    #[Assert\Choice(callback: [CostType::class, 'cases'])]
     #[ORM\Column(enumType: CostType::class, options: ['comment' => '计费方式'])]
     private ?CostType $costType = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     #[ORM\Column(length: 100, options: ['comment' => '运费模板名称'])]
     private ?string $name = null;
 
@@ -31,11 +34,9 @@ class LogisticsTemplate implements \Stringable
         return $this->mall;
     }
 
-    public function setMall(?Mall $mall): static
+    public function setMall(?Mall $mall): void
     {
         $this->mall = $mall;
-
-        return $this;
     }
 
     public function getCostType(): ?CostType
@@ -43,11 +44,9 @@ class LogisticsTemplate implements \Stringable
         return $this->costType;
     }
 
-    public function setCostType(CostType $costType): static
+    public function setCostType(CostType $costType): void
     {
         $this->costType = $costType;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -55,15 +54,13 @@ class LogisticsTemplate implements \Stringable
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

@@ -2,9 +2,9 @@
 
 namespace PinduoduoApiBundle\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\VideoRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -18,13 +18,17 @@ class Video implements \Stringable
     use TimestampableAware;
     use SnowflakeKeyAware;
 
-    #[ORM\ManyToOne(inversedBy: 'videos')]
+    #[ORM\ManyToOne(inversedBy: 'videos', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Mall $mall = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
     #[ORM\Column(length: 255, options: ['comment' => '视频URL'])]
     private ?string $url = null;
 
+    #[Assert\Type(type: 'int')]
     #[ORM\Column(nullable: true, options: ['comment' => '状态'])]
     private ?int $status = null;
 
@@ -33,11 +37,9 @@ class Video implements \Stringable
         return $this->mall;
     }
 
-    public function setMall(?Mall $mall): static
+    public function setMall(?Mall $mall): void
     {
         $this->mall = $mall;
-
-        return $this;
     }
 
     public function getUrl(): ?string
@@ -45,11 +47,9 @@ class Video implements \Stringable
         return $this->url;
     }
 
-    public function setUrl(string $url): static
+    public function setUrl(string $url): void
     {
         $this->url = $url;
-
-        return $this;
     }
 
     public function getStatus(): ?int
@@ -57,15 +57,13 @@ class Video implements \Stringable
         return $this->status;
     }
 
-    public function setStatus(?int $status): static
+    public function setStatus(?int $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

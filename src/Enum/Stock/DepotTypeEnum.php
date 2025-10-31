@@ -2,13 +2,14 @@
 
 namespace PinduoduoApiBundle\Enum\Stock;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
 use Tourze\EnumExtra\Selectable;
 use Tourze\EnumExtra\SelectTrait;
 
-enum DepotTypeEnum: int implements Labelable, Itemable, Selectable
+enum DepotTypeEnum: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -23,7 +24,7 @@ enum DepotTypeEnum: int implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::SELF_BUILT => '自建仓',
             self::AGENT => '代仓',
             self::THIRD_PARTY => '第三方仓',
@@ -31,6 +32,19 @@ enum DepotTypeEnum: int implements Labelable, Itemable, Selectable
             self::CROSS_BORDER => '跨境仓',
             self::BONDED => '保税仓',
             self::OVERSEAS => '海外仓',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::SELF_BUILT => 'success',
+            self::AGENT => 'info',
+            self::THIRD_PARTY => 'warning',
+            self::VIRTUAL => 'light',
+            self::CROSS_BORDER => 'primary',
+            self::BONDED => 'secondary',
+            self::OVERSEAS => 'danger',
         };
     }
 }

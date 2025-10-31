@@ -5,17 +5,32 @@ namespace PinduoduoApiBundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PinduoduoApiBundle\Entity\LogisticsTemplate;
+use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
 
 /**
- * @method LogisticsTemplate|null find($id, $lockMode = null, $lockVersion = null)
- * @method LogisticsTemplate|null findOneBy(array $criteria, array $orderBy = null)
- * @method LogisticsTemplate[] findAll()
- * @method LogisticsTemplate[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @extends ServiceEntityRepository<LogisticsTemplate>
  */
+#[AsRepository(entityClass: LogisticsTemplate::class)]
 class LogisticsTemplateRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, LogisticsTemplate::class);
+    }
+
+    public function save(LogisticsTemplate $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->persist($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(LogisticsTemplate $entity, bool $flush = true): void
+    {
+        $this->getEntityManager()->remove($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 }

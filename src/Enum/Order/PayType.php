@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Order;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.order.list.get
  */
-enum PayType: string implements Labelable, Itemable, Selectable
+enum PayType: string implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -30,6 +31,16 @@ enum PayType: string implements Labelable, Itemable, Selectable
             self::WEIXIN => 'WEIXIN',
             self::ALIPAY => 'ALIPAY',
             self::LIANLIANPAY => 'LIANLIANPAY',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::QQ => 'info',
+            self::WEIXIN => 'success',
+            self::ALIPAY => 'primary',
+            self::LIANLIANPAY => 'warning',
         };
     }
 }

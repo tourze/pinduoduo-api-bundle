@@ -1,0 +1,10 @@
+includes:
+    - ../../phpstan.neon
+
+parameters:
+    paths:
+        - src
+        - tests
+
+    # 覆盖全局设置，避免副作用
+    bootstrapFiles: []

@@ -2,6 +2,8 @@
 
 namespace PinduoduoApiBundle\Command\Goods;
 
+use PinduoduoApiBundle\Entity\Goods\Category;
+use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Repository\Goods\CategoryRepository;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\CategoryService;
@@ -32,7 +34,7 @@ class SpecSyncCommand extends LockableCommand
         foreach ($this->mallRepository->findAll() as $mall) {
             // 文档说：叶子类目ID，必须入参level=3时的cat_id,否则无法返回正确的参数
             $categories = $this->categoryRepository->findBy(['level' => 3]);
-            foreach ($categories as $i => $category) {
+            foreach ($categories as $category) {
                 $this->categoryService->syncSpecList($mall, $category);
             }
         }

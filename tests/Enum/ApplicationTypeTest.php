@@ -2,12 +2,17 @@
 
 namespace PinduoduoApiBundle\Tests\Enum;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PinduoduoApiBundle\Enum\ApplicationType;
+use Tourze\PHPUnitEnum\AbstractEnumTestCase;
 
-class ApplicationTypeTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(ApplicationType::class)]
+final class ApplicationTypeTest extends AbstractEnumTestCase
 {
-    public function testGetLabel_allCases_returnsCorrectLabels(): void
+    public function testGetLabelAllCasesReturnsCorrectLabels(): void
     {
         $this->assertEquals('推广优化', ApplicationType::推广优化->getLabel());
         $this->assertEquals('短信服务', ApplicationType::短信服务->getLabel());
@@ -22,16 +27,19 @@ class ApplicationTypeTest extends TestCase
         $this->assertEquals('快团团', ApplicationType::快团团->getLabel());
         $this->assertEquals('跨境企业ERP报关版', ApplicationType::跨境企业ERP报关版->getLabel());
     }
-    
-    public function testCases_returnsAllEnumCases(): void
+
+    public function testCasesReturnsAllEnumCases(): void
     {
         $cases = ApplicationType::cases();
-        
+
         $this->assertCount(12, $cases);
-        $this->assertContainsOnlyInstancesOf(ApplicationType::class, $cases);
+        // 验证所有case都是有效的ApplicationType实例
+        foreach ($cases as $case) {
+            $this->assertInstanceOf(ApplicationType::class, $case);
+        }
     }
-    
-    public function testEnumValues_areConsistent(): void
+
+    public function testEnumValuesAreConsistent(): void
     {
         // 验证枚举值和名称一致性
         foreach (ApplicationType::cases() as $case) {
@@ -39,4 +47,13 @@ class ApplicationTypeTest extends TestCase
             $this->assertEquals($case->name, $case->getLabel());
         }
     }
-} 
+
+    public function testToArray(): void
+    {
+        $result = ApplicationType::推广优化->toArray();
+        // 验证返回结果的结构和内容
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('value', $result);
+        $this->assertArrayHasKey('label', $result);
+    }
+}

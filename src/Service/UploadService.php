@@ -7,17 +7,18 @@ use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Entity\UploadImg;
 use PinduoduoApiBundle\Exception\UploadFailedException;
 use PinduoduoApiBundle\Repository\UploadImgRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Tourze\TempFileBundle\Service\TemporaryFileService;
 
+#[Autoconfigure(public: true)]
 class UploadService
 {
     public function __construct(
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
         private readonly TemporaryFileService $temporaryFileService,
         private readonly UploadImgRepository $imgRepository,
         private readonly EntityManagerInterface $entityManager,
-    )
-    {
+    ) {
     }
 
     /**
@@ -25,19 +26,28 @@ class UploadService
      */
     public function uploadImage(Mall $mall, string $file): UploadImg
     {
+        /** @var UploadImg|null $img */
         $img = $this->imgRepository->findOneBy([
             'mall' => $mall,
             'file' => $file,
         ]);
-        if ($img === null) {
+        if (null === $img) {
             $img = new UploadImg();
             $img->setMall($mall);
             $img->setFile($file);
         }
-        if ($img->getUrl() === null || $img->getUrl() === '') {
+
+        $url = $img->getUrl();
+        $imgFile = $img->getFile();
+
+        if (null === $url || '' === $url) {
+            if (null === $imgFile) {
+                throw new UploadFailedException('图片文件路径为空');
+            }
+
             $localFile = $this->temporaryFileService->generateTemporaryFileName('pdd');
-            file_put_contents($localFile, file_get_contents($img->getFile()));
-            $response = $this->sdkService->request($mall, 'pdd.goods.img.upload', [
+            file_put_contents($localFile, file_get_contents($imgFile));
+            $response = $this->pinduoduoClient->requestByMall($mall, 'pdd.goods.img.upload', [
                 'file' => $localFile,
             ]);
             // array:1 [
@@ -46,10 +56,10 @@ class UploadService
             //    "url" => "https://img.pddpic.com/open-gw/2024-05-15/c98022b4-f4ea-4025-9d76-ef1e7f5c119b.jpeg"
             //  ]
             // ]
-            if (!isset($response['goods_img_upload_response'])) {
+            if (!isset($response['url']) || !is_string($response['url'])) {
                 throw new UploadFailedException('图片上传失败');
             }
-            $img->setUrl($response['goods_img_upload_response']['url']);
+            $img->setUrl($response['url']);
         }
         $this->entityManager->persist($img);
         $this->entityManager->flush();

@@ -2,13 +2,14 @@
 
 namespace PinduoduoApiBundle\Enum\Stock;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
 use Tourze\EnumExtra\Selectable;
 use Tourze\EnumExtra\SelectTrait;
 
-enum StockWareTypeEnum: int implements Labelable, Itemable, Selectable
+enum StockWareTypeEnum: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -19,10 +20,19 @@ enum StockWareTypeEnum: int implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::NORMAL => '普通货品',
             self::COMBINED => '组合货品',
             self::VIRTUAL => '虚拟货品',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::NORMAL => self::PRIMARY,      // 普通货品 - 主要状态
+            self::COMBINED => self::INFO,       // 组合货品 - 信息状态
+            self::VIRTUAL => self::WARNING,     // 虚拟货品 - 警告状态
         };
     }
 }

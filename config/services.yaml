@@ -5,6 +5,7 @@ services:
 
     PinduoduoApiBundle\Controller\:
         resource: '../src/Controller/'
+        exclude: '../src/Controller/Auth/'
         tags: ['controller.service_arguments']
 
     # 配置属性控制器加载器
@@ -13,3 +14,10 @@ services:
         tags: ['controller.service_arguments']
         calls:
             - [setContainer, ['@service_container']]
+
+    # 注册新的 PinduoduoClient 服务
+    PinduoduoApiBundle\Service\PinduoduoClient:
+        autowire: true
+        public: true
+
+    

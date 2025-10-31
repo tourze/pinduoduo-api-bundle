@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Goods;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.detail.get
  */
-enum DeliveryType: int implements Labelable, Itemable, Selectable
+enum DeliveryType: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -26,6 +27,14 @@ enum DeliveryType: int implements Labelable, Itemable, Selectable
         return match ($this) {
             self::NoDelivery => '无物流发货',
             self::HasDelivery => '有物流发货',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::NoDelivery => 'warning',
+            self::HasDelivery => 'success',
         };
     }
 }

@@ -4,10 +4,10 @@ namespace PinduoduoApiBundle\Command\Goods;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Entity\Goods\Measurement;
-use PinduoduoApiBundle\Enum\ApplicationType;
+use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Repository\Goods\MeasurementRepository;
 use PinduoduoApiBundle\Repository\MallRepository;
-use PinduoduoApiBundle\Service\SdkService;
+use PinduoduoApiBundle\Service\PinduoduoClient;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +27,7 @@ class MeasurementSyncCommand extends LockableCommand
     public function __construct(
         private readonly MallRepository $mallRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
         private readonly MeasurementRepository $measurementRepository,
     ) {
         parent::__construct();
@@ -36,29 +36,81 @@ class MeasurementSyncCommand extends LockableCommand
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         foreach ($this->mallRepository->findAll() as $mall) {
-            // 进销存、商品优化分析、搬家上货、虚拟商家后台系统、企业ERP、商家后台系统、电子凭证商家后台系统、跨境企业ERP报关版
-            $sdk = $this->sdkService->getMallSdk($mall, ApplicationType::搬家上货);
-            if ($sdk === null) {
-                continue;
-            }
-
-            $response = $sdk->auth_api->request('pdd.gooods.sku.measurement.list');
-            if (!isset($response['gooods_sku_measurement_list_response'])) {
-                continue;
-            }
-
-            foreach ($response['gooods_sku_measurement_list_response']['measurement_list'] as $item) {
-                $measurement = $this->measurementRepository->findOneBy(['code' => $item['code']]);
-                if ($measurement === null) {
-                    $measurement = new Measurement();
-                    $measurement->setCode($item['code']);
-                }
-                $measurement->setDescription($item['desc']);
-                $this->entityManager->persist($measurement);
-                $this->entityManager->flush();
-            }
+            $this->syncMeasurementForMall($mall);
         }
 
         return Command::SUCCESS;
+    }
+
+    private function syncMeasurementForMall(Mall $mall): void
+    {
+        $measurementList = $this->fetchMeasurementList($mall);
+        if (null === $measurementList) {
+            return;
+        }
+
+        $this->processMeasurementList($measurementList);
+    }
+
+    /**
+     * @param array<mixed> $measurementList
+     */
+    private function processMeasurementList(array $measurementList): void
+    {
+        foreach ($measurementList as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            $this->processMeasurementItem($item);
+        }
+    }
+
+    /**
+     * @return array<mixed>|null
+     */
+    private function fetchMeasurementList(Mall $mall): ?array
+    {
+        try {
+            $response = $this->pinduoduoClient->requestByMall($mall, 'pdd.gooods.sku.measurement.list');
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        $measurementList = $response['measurement_list'] ?? null;
+
+        return is_array($measurementList) ? $measurementList : null;
+    }
+
+    /**
+     * @param array<mixed> $item
+     */
+    private function processMeasurementItem(array $item): void
+    {
+        $code = $item['code'] ?? null;
+        $measurement = $this->findOrCreateMeasurement($code);
+
+        $desc = $item['desc'] ?? null;
+        $measurement->setDescription(is_string($desc) ? $desc : null);
+
+        $this->entityManager->persist($measurement);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param mixed $code
+     */
+    private function findOrCreateMeasurement($code): Measurement
+    {
+        $measurement = $this->measurementRepository->findOneBy(['code' => $code]);
+        if ($measurement instanceof Measurement) {
+            return $measurement;
+        }
+
+        $measurement = new Measurement();
+        if (is_string($code)) {
+            $measurement->setCode($code);
+        }
+
+        return $measurement;
     }
 }

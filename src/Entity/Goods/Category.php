@@ -4,11 +4,11 @@ namespace PinduoduoApiBundle\Entity\Goods;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\CategoryRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -28,65 +28,77 @@ class Category implements \Stringable
     /**
      * 下级分类列表.
      *
-     * @var Collection<Category>
+     * @var Collection<int, Category>
      */
     #[Groups(groups: ['restful_read', 'api_tree'])]
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: Category::class)]
     private Collection $children;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 120)]
     #[ORM\Column(length: 120, options: ['comment' => '分类名'])]
     private string $name;
 
+    #[Assert\NotBlank]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(options: ['comment' => '分类级别'])]
     private int $level;
 
+    /**
+     * @var Collection<int, Spec>
+     */
     #[ORM\ManyToMany(targetEntity: Spec::class, mappedBy: 'categories', fetch: 'EXTRA_LAZY')]
     private Collection $specs;
 
+    /**
+     * @var Collection<int, Goods>
+     */
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Goods::class)]
     private Collection $goodsList;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '类目商品发布规则'])]
     private ?array $catRule = null;
 
     public function __construct()
     {
+        $this->children = new ArrayCollection();
         $this->specs = new ArrayCollection();
         $this->goodsList = new ArrayCollection();
     }
-
 
     public function getParent(): ?Category
     {
         return $this->parent;
     }
 
-    public function setParent(?Category $parent): self
+    public function setParent(?Category $parent): void
     {
         $this->parent = $parent;
-
-        return $this;
     }
 
     /**
-     * @return Collection<Category>
+     * @return Collection<int, Category>
      */
     public function getChildren(): Collection
     {
         return $this->children;
     }
 
-    public function addChild(self $child): self
+    public function addChild(self $child): static
     {
         if (!$this->children->contains($child)) {
-            $this->children[] = $child;
+            $this->children->add($child);
             $child->setParent($this);
         }
 
         return $this;
     }
 
-    public function removeChild(self $child): self
+    public function removeChild(self $child): static
     {
         if ($this->children->removeElement($child)) {
             // set the owning side to null (unless already changed)
@@ -103,11 +115,9 @@ class Category implements \Stringable
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getLevel(): int
@@ -115,11 +125,9 @@ class Category implements \Stringable
         return $this->level;
     }
 
-    public function setLevel(int $level): static
+    public function setLevel(int $level): void
     {
         $this->level = $level;
-
-        return $this;
     }
 
     /**
@@ -151,7 +159,7 @@ class Category implements \Stringable
 
     public function __toString(): string
     {
-        if ($this->getId() === null || $this->getId() === '') {
+        if (null === $this->getId() || '' === $this->getId()) {
             return '';
         }
 
@@ -188,15 +196,19 @@ class Category implements \Stringable
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getCatRule(): ?array
     {
         return $this->catRule;
     }
 
-    public function setCatRule(?array $catRule): static
+    /**
+     * @param array<string, mixed>|null $catRule
+     */
+    public function setCatRule(?array $catRule): void
     {
         $this->catRule = $catRule;
-
-        return $this;
     }
 }

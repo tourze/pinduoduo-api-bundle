@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum\Order;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,7 +14,7 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.order.list.get
  */
-enum TradeType: int implements Labelable, Itemable, Selectable
+enum TradeType: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -26,6 +27,14 @@ enum TradeType: int implements Labelable, Itemable, Selectable
         return match ($this) {
             self::普通订单 => '普通订单',
             self::定金订单 => '定金订单',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::普通订单 => 'primary',
+            self::定金订单 => 'warning',
         };
     }
 }

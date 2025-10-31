@@ -5,6 +5,7 @@ namespace PinduoduoApiBundle\Entity\Goods;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Goods\MeasurementRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -18,9 +19,12 @@ class Measurement implements \Stringable
     use SnowflakeKeyAware;
     use TimestampableAware;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 30)]
     #[ORM\Column(length: 30, unique: true, options: ['comment' => '编码'])]
     private string $code;
 
+    #[Assert\Length(max: 65535)]
     #[ORM\Column(type: Types::TEXT, nullable: true, options: ['comment' => '说明'])]
     private ?string $description = null;
 
@@ -29,11 +33,9 @@ class Measurement implements \Stringable
         return $this->code;
     }
 
-    public function setCode(string $code): static
+    public function setCode(string $code): void
     {
         $this->code = $code;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -41,15 +43,13 @@ class Measurement implements \Stringable
         return $this->description;
     }
 
-    public function setDescription(?string $description): static
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
 }

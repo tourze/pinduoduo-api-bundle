@@ -1,3 +1,0 @@
-pinduoduo_api_controllers:
-  resource: '../../Controller/'
-  type: attribute

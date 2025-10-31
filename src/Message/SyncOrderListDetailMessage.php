@@ -23,15 +23,21 @@ class SyncOrderListDetailMessage
     }
 
     /**
-     * @var array 列表中拿到的单个订单信息
+     * @var array<mixed> 列表中拿到的单个订单信息
      */
     private array $orderInfo;
 
+    /**
+     * @return array<mixed>
+     */
     public function getOrderInfo(): array
     {
         return $this->orderInfo;
     }
 
+    /**
+     * @param array<mixed> $orderInfo
+     */
     public function setOrderInfo(array $orderInfo): void
     {
         $this->orderInfo = $orderInfo;

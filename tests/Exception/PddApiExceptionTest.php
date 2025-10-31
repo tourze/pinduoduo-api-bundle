@@ -2,50 +2,57 @@
 
 namespace PinduoduoApiBundle\Tests\Exception;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PinduoduoApiBundle\Exception\PddApiException;
+use Tourze\PHPUnitBase\AbstractExceptionTestCase;
 
-class PddApiExceptionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(PddApiException::class)]
+final class PddApiExceptionTest extends AbstractExceptionTestCase
 {
-    public function testConstruct_withCompleteErrorResponse_correctlyInitializedException(): void
+    protected function getExceptionClass(): string
     {
-        $errorResponse = [
-            'error_msg' => '测试错误消息',
-            'error_code' => 1001,
-            'sub_msg' => '子消息详情'
-        ];
-        
-        $exception = new PddApiException($errorResponse);
-        
-        $this->assertEquals('测试错误消息', $exception->getMessage());
-        $this->assertEquals(1001, $exception->getCode());
-        $this->assertEquals('子消息详情', $exception->getSubMsg());
+        return PddApiException::class;
     }
-    
-    public function testConstruct_withoutSubMsg_subMsgIsNull(): void
+
+    public function testExceptionCanBeInstantiated(): void
     {
         $errorResponse = [
-            'error_msg' => '测试错误消息',
-            'error_code' => 1002
+            'error_msg' => 'Test API error',
+            'error_code' => 500,
+            'sub_msg' => 'Additional error info',
         ];
-        
         $exception = new PddApiException($errorResponse);
-        
-        $this->assertEquals('测试错误消息', $exception->getMessage());
-        $this->assertEquals(1002, $exception->getCode());
+
+        $this->assertInstanceOf(PddApiException::class, $exception);
+        $this->assertEquals('Test API error', $exception->getMessage());
+        $this->assertEquals(500, $exception->getCode());
+        $this->assertEquals('Additional error info', $exception->getSubMsg());
+    }
+
+    public function testExceptionInheritsFromException(): void
+    {
+        $errorResponse = [
+            'error_msg' => 'Test error',
+            'error_code' => 400,
+        ];
+        $exception = new PddApiException($errorResponse);
+
+        $this->assertInstanceOf(\Exception::class, $exception);
+    }
+
+    public function testExceptionWithoutSubMsg(): void
+    {
+        $errorResponse = [
+            'error_msg' => 'Error without sub message',
+            'error_code' => 404,
+        ];
+        $exception = new PddApiException($errorResponse);
+
+        $this->assertEquals('Error without sub message', $exception->getMessage());
+        $this->assertEquals(404, $exception->getCode());
         $this->assertNull($exception->getSubMsg());
     }
-    
-    public function testSetAndGetSubMsg_validSubMsg_subMsgIsSet(): void
-    {
-        $errorResponse = [
-            'error_msg' => '测试错误消息',
-            'error_code' => 1003
-        ];
-        
-        $exception = new PddApiException($errorResponse);
-        $exception->setSubMsg('新的子消息');
-        
-        $this->assertEquals('新的子消息', $exception->getSubMsg());
-    }
-} 
+}

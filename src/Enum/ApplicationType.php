@@ -2,6 +2,7 @@
 
 namespace PinduoduoApiBundle\Enum;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
@@ -13,11 +14,10 @@ use Tourze\EnumExtra\SelectTrait;
  *
  * @see https://open.pinduoduo.com/application/app/create-list
  */
-enum ApplicationType: string implements Labelable, Itemable, Selectable
+enum ApplicationType: string implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
-
     case 推广优化 = '推广优化';
     case 短信服务 = '短信服务';
     case 打单 = '打单';
@@ -46,6 +46,42 @@ enum ApplicationType: string implements Labelable, Itemable, Selectable
             self::订单处理 => '订单处理',
             self::快团团 => '快团团',
             self::跨境企业ERP报关版 => '跨境企业ERP报关版',
+        };
+    }
+
+    /**
+     * 获取所有枚举的选项数组（用于下拉列表等）
+     *
+     * @return array<int, array{value: string, label: string}>
+     */
+    public static function toSelectItems(): array
+    {
+        $result = [];
+        foreach (self::cases() as $case) {
+            $result[] = [
+                'value' => $case->value,
+                'label' => $case->getLabel(),
+            ];
+        }
+
+        return $result;
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::推广优化 => 'primary',
+            self::短信服务 => 'info',
+            self::打单 => 'success',
+            self::进销存 => 'warning',
+            self::商品优化分析 => 'primary',
+            self::搬家上货 => 'info',
+            self::电子面单 => 'success',
+            self::企业ERP => 'danger',
+            self::仓储管理系统 => 'warning',
+            self::订单处理 => 'success',
+            self::快团团 => 'secondary',
+            self::跨境企业ERP报关版 => 'danger',
         };
     }
 }

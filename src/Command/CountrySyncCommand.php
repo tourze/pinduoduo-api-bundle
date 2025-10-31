@@ -4,9 +4,10 @@ namespace PinduoduoApiBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PinduoduoApiBundle\Entity\Country;
+use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Repository\CountryRepository;
 use PinduoduoApiBundle\Repository\MallRepository;
-use PinduoduoApiBundle\Service\SdkService;
+use PinduoduoApiBundle\Service\PinduoduoClient;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +26,7 @@ class CountrySyncCommand extends LockableCommand
 
     public function __construct(
         private readonly MallRepository $mallRepository,
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
         private readonly CountryRepository $countryRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -34,32 +35,90 @@ class CountrySyncCommand extends LockableCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        foreach ($this->mallRepository->findAll() as $mall) {
-            try {
-                $response = $this->sdkService->request($mall, 'pdd.goods.country.get');
-            } catch (\Throwable $exception) {
-                $output->writeln("同步出错：{$exception}");
-                continue;
-            }
-            if (!isset($response['goods_country_get_response'])) {
-                continue;
-            }
-            dump($response['goods_country_get_response']);
-
-            foreach ($response['goods_country_get_response']['country_list'] as $item) {
-                $country = $this->countryRepository->find($item['country_id']);
-                if ($country === null) {
-                    $country = new Country();
-                    $country->setId($item['country_id']);
-                }
-                $country->setName($item['country_name']);
-
-                $this->entityManager->persist($country);
-                $this->entityManager->flush();
-                $this->entityManager->detach($country);
-            }
+        $malls = $this->mallRepository->findAll();
+        foreach ($malls as $mall) {
+            $this->syncCountriesForMall($mall, $output);
         }
 
         return Command::SUCCESS;
+    }
+
+    private function syncCountriesForMall(Mall $mall, OutputInterface $output): void
+    {
+        $response = $this->fetchCountryDataFromApi($mall, $output);
+        if (null === $response) {
+            return;
+        }
+
+        $this->processCountryList($response['country_list']);
+    }
+
+    /**
+     * @return array{country_list: array<mixed>}|null
+     */
+    private function fetchCountryDataFromApi(Mall $mall, OutputInterface $output): ?array
+    {
+        try {
+            $response = $this->pinduoduoClient->requestByMall($mall, 'pdd.goods.country.get');
+        } catch (\Throwable $exception) {
+            $output->writeln("同步出错：{$exception}");
+
+            return null;
+        }
+
+        if (!isset($response['country_list']) || !is_array($response['country_list'])) {
+            return null;
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param array<mixed> $countryList
+     */
+    private function processCountryList(array $countryList): void
+    {
+        foreach ($countryList as $item) {
+            if (!$this->isValidCountryItem($item)) {
+                continue;
+            }
+            assert(is_array($item));
+
+            /** @var array<string, mixed> $validItem */
+            $validItem = $item;
+            $this->saveCountryItem($validItem);
+        }
+    }
+
+    private function isValidCountryItem(mixed $item): bool
+    {
+        return is_array($item) && isset($item['country_id'], $item['country_name']);
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function saveCountryItem(array $item): void
+    {
+        $countryId = is_string($item['country_id']) ? $item['country_id'] : null;
+        $countryName = is_string($item['country_name']) ? $item['country_name'] : '';
+
+        $country = $this->findOrCreateCountry($countryId);
+        $country->setName($countryName);
+
+        $this->entityManager->persist($country);
+        $this->entityManager->flush();
+        $this->entityManager->detach($country);
+    }
+
+    private function findOrCreateCountry(?string $countryId): Country
+    {
+        $country = $this->countryRepository->find($countryId);
+        if (null === $country) {
+            $country = new Country();
+            $country->setId($countryId);
+        }
+
+        return $country;
     }
 }

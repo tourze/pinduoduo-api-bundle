@@ -1,18 +1,45 @@
 services:
-  # default configuration for services in *this* file
   _defaults:
-    autowire: true      # Automatically injects dependencies in your services.
-    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    autowire: true
+    autoconfigure: true
 
-  # 如果确认要使用自动扫描、自动注册，建议尽可能将要扫描的目录路径收缩，不要设置那么大的范围
-  PinduoduoApiBundle\:
-    resource: '../../'
-    exclude:
-      - '../../DependencyInjection/'
-      - '../../Enum/'
-      - '../../Entity/'
-      - '../../Message/'
-      - '../../Model/'
-      - '../../Exception/'
-      - '../../Resources/'
-      - '../../Tests/'
+  # Services
+  PinduoduoApiBundle\Service\:
+    resource: '../../Service/'
+
+  # Repositories
+  PinduoduoApiBundle\Repository\:
+    resource: '../../Repository/'
+
+  # Commands
+  PinduoduoApiBundle\Command\:
+    resource: '../../Command/'
+
+  # Controllers
+  PinduoduoApiBundle\Controller\:
+    resource: '../../Controller/'
+    tags: ['controller.service_arguments']
+
+  # Event Subscribers
+  PinduoduoApiBundle\EventSubscriber\:
+    resource: '../../EventSubscriber/'
+
+  # Message Handlers
+  PinduoduoApiBundle\MessageHandler\:
+    resource: '../../MessageHandler/'
+
+  # Procedures
+  PinduoduoApiBundle\Procedure\:
+    resource: '../../Procedure/'
+
+  # Requests
+  PinduoduoApiBundle\Request\:
+    resource: '../../Request/'
+
+  # Test Mock Services
+  PinduoduoApiBundle\Tests\Service\MockNoticeService:
+    class: PinduoduoApiBundle\Tests\Service\MockNoticeService
+    public: true
+
+  # Service Aliases for Testing
+  WeuiBundle\Service\NoticeService: '@PinduoduoApiBundle\Tests\Service\MockNoticeService'

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use PinduoduoApiBundle\Repository\Stock\StockWareSkuRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 use Tourze\DoctrineUserBundle\Traits\BlameableAware;
@@ -19,32 +20,47 @@ class StockWareSku implements \Stringable
     use TimestampableAware;
     use BlameableAware;
 
-    #[ORM\ManyToOne(targetEntity: StockWare::class, inversedBy: 'stockWareSkus')]
+    #[ORM\ManyToOne(targetEntity: StockWare::class, inversedBy: 'stockWareSkus', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private StockWare $stockWare;
 
     #[ORM\Column(type: Types::BIGINT, options: ['comment' => '商品ID'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 20)]
     private string $goodsId;
 
     #[ORM\Column(type: Types::BIGINT, options: ['comment' => 'SKU ID'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 20)]
     private string $skuId;
 
     #[ORM\Column(type: Types::STRING, length: 100, options: ['comment' => 'SKU名称'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     private string $skuName;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '库存数量', 'default' => 0])]
+    #[Assert\PositiveOrZero]
+    #[Assert\Range(min: 0, max: 2147483647)]
     private int $quantity = 0;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否存在货品', 'default' => false])]
+    #[Assert\Type(type: 'bool')]
     private bool $existWare = false;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['comment' => '是否在售', 'default' => false])]
+    #[Assert\Type(type: 'bool')]
     private bool $isOnsale = false;
 
+    /**
+     * @var Collection<int, StockWareSpec>
+     */
     #[ORM\OneToMany(mappedBy: 'stockWareSku', targetEntity: StockWareSpec::class, cascade: ['persist', 'remove'])]
+    #[Assert\Type(type: 'object')]
     private Collection $specs;
 
     #[ORM\Column(type: Types::INTEGER, options: ['comment' => '关联状态：1-正常，2-停用'])]
+    #[Assert\Choice(choices: [1, 2])]
     private int $status = 1;
 
     public function __construct()
@@ -57,10 +73,9 @@ class StockWareSku implements \Stringable
         return $this->stockWare;
     }
 
-    public function setStockWare(?StockWare $stockWare): self
+    public function setStockWare(StockWare $stockWare): void
     {
         $this->stockWare = $stockWare;
-        return $this;
     }
 
     public function getGoodsId(): string
@@ -68,10 +83,9 @@ class StockWareSku implements \Stringable
         return $this->goodsId;
     }
 
-    public function setGoodsId(string $goodsId): self
+    public function setGoodsId(string $goodsId): void
     {
         $this->goodsId = $goodsId;
-        return $this;
     }
 
     public function getSkuId(): string
@@ -79,10 +93,9 @@ class StockWareSku implements \Stringable
         return $this->skuId;
     }
 
-    public function setSkuId(string $skuId): self
+    public function setSkuId(string $skuId): void
     {
         $this->skuId = $skuId;
-        return $this;
     }
 
     public function getSkuName(): string
@@ -90,10 +103,9 @@ class StockWareSku implements \Stringable
         return $this->skuName;
     }
 
-    public function setSkuName(string $skuName): self
+    public function setSkuName(string $skuName): void
     {
         $this->skuName = $skuName;
-        return $this;
     }
 
     public function getQuantity(): int
@@ -101,10 +113,9 @@ class StockWareSku implements \Stringable
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): self
+    public function setQuantity(int $quantity): void
     {
         $this->quantity = $quantity;
-        return $this;
     }
 
     public function isExistWare(): bool
@@ -112,10 +123,9 @@ class StockWareSku implements \Stringable
         return $this->existWare;
     }
 
-    public function setExistWare(bool $existWare): self
+    public function setExistWare(bool $existWare): void
     {
         $this->existWare = $existWare;
-        return $this;
     }
 
     public function isOnsale(): bool
@@ -123,34 +133,34 @@ class StockWareSku implements \Stringable
         return $this->isOnsale;
     }
 
-    public function setIsOnsale(bool $isOnsale): self
+    public function setIsOnsale(bool $isOnsale): void
     {
         $this->isOnsale = $isOnsale;
-        return $this;
     }
 
+    /**
+     * @return Collection<int, StockWareSpec>
+     */
     public function getSpecs(): Collection
     {
         return $this->specs;
     }
 
-    public function addSpec(StockWareSpec $spec): self
+    public function addSpec(StockWareSpec $spec): void
     {
         if (!$this->specs->contains($spec)) {
             $this->specs->add($spec);
             $spec->setStockWareSku($this);
         }
-        return $this;
     }
 
-    public function removeSpec(StockWareSpec $spec): self
+    public function removeSpec(StockWareSpec $spec): void
     {
         if ($this->specs->removeElement($spec)) {
             if ($spec->getStockWareSku() === $this) {
                 $spec->setStockWareSku(null);
             }
         }
-        return $this;
     }
 
     public function getStatus(): int
@@ -158,15 +168,13 @@ class StockWareSku implements \Stringable
         return $this->status;
     }
 
-    public function setStatus(int $status): self
+    public function setStatus(int $status): void
     {
         $this->status = $status;
-        return $this;
     }
-
 
     public function __toString(): string
     {
-        return (string) ($this->getId() ?? '');
+        return $this->getId() ?? '';
     }
-} 
+}

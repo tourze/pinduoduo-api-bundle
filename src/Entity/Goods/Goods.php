@@ -13,6 +13,7 @@ use PinduoduoApiBundle\Enum\Goods\DeliveryType;
 use PinduoduoApiBundle\Enum\Goods\GoodsStatus;
 use PinduoduoApiBundle\Enum\Goods\GoodsType;
 use PinduoduoApiBundle\Repository\Goods\GoodsRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Tourze\DoctrineSnowflakeBundle\Traits\SnowflakeKeyAware;
 use Tourze\DoctrineTimestampBundle\Traits\TimestampableAware;
 
@@ -23,173 +24,259 @@ class Goods implements \Stringable
     use SnowflakeKeyAware;
     use TimestampableAware;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Mall $mall = null;
 
+    #[Assert\Length(max: 100)]
     #[ORM\Column(length: 100, nullable: true, options: ['comment' => '商家外部编码'])]
     private ?string $outerGoodsId = null;
 
+    #[Assert\Length(max: 64)]
     #[ORM\Column(length: 64, nullable: true, options: ['comment' => '商品序列编码'])]
     private ?string $goodsSn = null;
 
+    #[Assert\Choice(callback: [GoodsType::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: GoodsType::class, options: ['comment' => '商品类型'])]
     private ?GoodsType $goodsType = null;
 
-    #[ORM\ManyToOne(inversedBy: 'goodsList')]
+    #[ORM\ManyToOne(inversedBy: 'goodsList', cascade: ['persist'])]
     private ?Category $category = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否七天无理由售后'])]
     private ?bool $refundable = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '商品名称'])]
     private ?string $goodsName = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true, options: ['comment' => '商品库存'])]
     private ?int $goodsQuantity = null;
 
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '商品图片url'])]
     private ?string $imageUrl = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品是否上架'])]
     private ?bool $onsale = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品是否全新'])]
     private ?bool $secondHand = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true, options: ['comment' => '承诺发货时间'])]
     private ?int $shipmentLimitSecond = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\Positive]
     #[ORM\Column(nullable: true, options: ['comment' => '成团人数'])]
     private ?int $groupRequiredCustomerNum = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true, options: ['comment' => '商品预扣库存'])]
     private ?int $goodsReserveQuantity = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否多sku'])]
     private ?bool $moreSku = null;
 
+    /**
+     * @var Collection<int, Sku>
+     */
     #[ORM\OneToMany(mappedBy: 'goods', targetEntity: Sku::class, orphanRemoval: true)]
     private Collection $skus;
 
+    #[Assert\Type(type: 'int')]
     #[ORM\Column(nullable: true, options: ['comment' => '坏果包赔'])]
     private ?int $badFruitClaim = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true, options: ['comment' => '限购次数'])]
     private ?int $buyLimit = null;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品轮播图列表'])]
     private ?array $carouselGalleryList = null;
 
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '商品缩略图'])]
     private ?string $thumbUrl = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '买家自提模版id'])]
     private ?string $maiJiaZiTi = null;
 
     /**
      * @var int|null 可选范围0-100, 0表示取消，95表示95折，设置需先查询规则接口获取实际可填范围
      */
+    #[Assert\Type(type: 'int')]
+    #[Assert\Range(min: 0, max: 100)]
     #[ORM\Column(nullable: true, options: ['comment' => '满2件折扣'])]
     private ?int $twoPiecesDiscount = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(type: Types::BIGINT, nullable: true, options: ['comment' => '团购人数'])]
     private ?string $customerNum = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '卡券类商品属性'])]
     private ?array $elecGoodsAttributes = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否支持假一赔十'])]
     private ?bool $folt = null;
 
+    #[Assert\Choice(callback: [DeliveryType::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: DeliveryType::class, options: ['comment' => '发货方式'])]
     private ?DeliveryType $deliveryType = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品属性列表'])]
     private ?array $goodsProperties = null;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品视频'])]
     private ?array $videoGallery = null;
 
     /**
      * @var int|null 目前只支持0和365
      */
+    #[Assert\Type(type: 'int')]
+    #[Assert\Choice(choices: [0, 365])]
     #[ORM\Column(nullable: true, options: ['comment' => '只换不修的天数'])]
     private ?int $zhiHuanBuXiu = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否当日发货'])]
     private ?bool $deliveryOneDay = null;
 
+    #[Assert\Type(type: 'int')]
     #[ORM\Column(nullable: true, options: ['comment' => '海外商品类型'])]
     private ?int $overseaType = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '水果类目温馨提示'])]
     private ?string $warmTips = null;
 
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '商品描述'])]
     private ?string $goodsDesc = null;
 
+    #[Assert\Length(max: 100)]
     #[ORM\Column(length: 100, nullable: true, options: ['comment' => '保税仓'])]
     private ?string $warehouse = null;
 
+    #[Assert\Type(type: 'int')]
     #[ORM\Column(nullable: true, options: ['comment' => '第三方商品来源'])]
     private ?int $outSourceType = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '日历商品出行信息'])]
     private ?array $goodsTravelAttr = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '支持全国联保'])]
     private ?bool $quanGuoLianBao = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true, options: ['comment' => '参考价格，单位为分'])]
     private ?int $marketPrice = null;
 
+    #[Assert\Type(type: 'int')]
+    #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true, options: ['comment' => '单次限量'])]
     private ?int $orderLimit = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     private ?Country $country = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否支持正品发票'])]
     private ?bool $invoiceStatus = null;
 
+    #[Assert\Choice(callback: [GoodsStatus::class, 'cases'])]
     #[ORM\Column(nullable: true, enumType: GoodsStatus::class, options: ['comment' => '商品状态'])]
     private ?GoodsStatus $status = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否成团预售'])]
     private ?bool $groupPreSale = null;
 
+    #[Assert\Type(type: '\DateTimeInterface')]
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => '预售时间'])]
     private ?\DateTimeInterface $preSaleTime = null;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '商品详情图'])]
     private ?array $detailGalleryList = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否sku预售'])]
     private ?bool $skuPreSale = null;
 
     /**
      * @var string|null 示例：新包装，保证产品的口感和新鲜度。单颗独立小包装，双重营养，1斤家庭分享装，更实惠新疆一级骏枣夹核桃仁。
      */
+    #[Assert\Length(max: 255)]
     #[ORM\Column(length: 255, nullable: true, options: ['comment' => '短标题'])]
     private ?string $tinyName = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '是否预售'])]
     private ?bool $preSale = null;
 
+    #[Assert\Length(max: 120)]
     #[ORM\Column(length: 120, nullable: true, options: ['comment' => '第三方商品id'])]
     private ?string $outSourceGoodsId = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '日历商品交易相关信息'])]
     private ?array $goodsTradeAttr = null;
 
+    #[Assert\Type(type: 'bool')]
     #[ORM\Column(nullable: true, options: ['comment' => '缺重包退'])]
     private ?bool $lackOfWeightClaim = null;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    #[Assert\Type(type: 'array')]
     #[ORM\Column(nullable: true, options: ['comment' => '海外商品信息'])]
     private ?array $overseaGoods = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(cascade: ['persist'])]
     private ?LogisticsTemplate $costTemplate = null;
 
     public function __construct()
@@ -202,11 +289,9 @@ class Goods implements \Stringable
         return $this->mall;
     }
 
-    public function setMall(?Mall $mall): static
+    public function setMall(?Mall $mall): void
     {
         $this->mall = $mall;
-
-        return $this;
     }
 
     public function getGoodsSn(): ?string
@@ -214,11 +299,9 @@ class Goods implements \Stringable
         return $this->goodsSn;
     }
 
-    public function setGoodsSn(?string $goodsSn): static
+    public function setGoodsSn(?string $goodsSn): void
     {
         $this->goodsSn = $goodsSn;
-
-        return $this;
     }
 
     public function getGoodsType(): ?GoodsType
@@ -226,11 +309,9 @@ class Goods implements \Stringable
         return $this->goodsType;
     }
 
-    public function setGoodsType(?GoodsType $goodsType): static
+    public function setGoodsType(?GoodsType $goodsType): void
     {
         $this->goodsType = $goodsType;
-
-        return $this;
     }
 
     public function isRefundable(): ?bool
@@ -238,11 +319,9 @@ class Goods implements \Stringable
         return $this->refundable;
     }
 
-    public function setRefundable(?bool $refundable): static
+    public function setRefundable(?bool $refundable): void
     {
         $this->refundable = $refundable;
-
-        return $this;
     }
 
     public function getGoodsName(): ?string
@@ -250,11 +329,9 @@ class Goods implements \Stringable
         return $this->goodsName;
     }
 
-    public function setGoodsName(?string $goodsName): static
+    public function setGoodsName(?string $goodsName): void
     {
         $this->goodsName = $goodsName;
-
-        return $this;
     }
 
     public function getGoodsQuantity(): ?int
@@ -262,11 +339,9 @@ class Goods implements \Stringable
         return $this->goodsQuantity;
     }
 
-    public function setGoodsQuantity(?int $goodsQuantity): static
+    public function setGoodsQuantity(?int $goodsQuantity): void
     {
         $this->goodsQuantity = $goodsQuantity;
-
-        return $this;
     }
 
     public function getImageUrl(): ?string
@@ -274,11 +349,9 @@ class Goods implements \Stringable
         return $this->imageUrl;
     }
 
-    public function setImageUrl(?string $imageUrl): static
+    public function setImageUrl(?string $imageUrl): void
     {
         $this->imageUrl = $imageUrl;
-
-        return $this;
     }
 
     public function isOnsale(): ?bool
@@ -286,11 +359,9 @@ class Goods implements \Stringable
         return $this->onsale;
     }
 
-    public function setOnsale(?bool $onsale): static
+    public function setOnsale(?bool $onsale): void
     {
         $this->onsale = $onsale;
-
-        return $this;
     }
 
     public function isSecondHand(): ?bool
@@ -298,11 +369,9 @@ class Goods implements \Stringable
         return $this->secondHand;
     }
 
-    public function setSecondHand(?bool $secondHand): static
+    public function setSecondHand(?bool $secondHand): void
     {
         $this->secondHand = $secondHand;
-
-        return $this;
     }
 
     public function getShipmentLimitSecond(): ?int
@@ -310,11 +379,9 @@ class Goods implements \Stringable
         return $this->shipmentLimitSecond;
     }
 
-    public function setShipmentLimitSecond(?int $shipmentLimitSecond): static
+    public function setShipmentLimitSecond(?int $shipmentLimitSecond): void
     {
         $this->shipmentLimitSecond = $shipmentLimitSecond;
-
-        return $this;
     }
 
     public function getGroupRequiredCustomerNum(): ?int
@@ -322,11 +389,9 @@ class Goods implements \Stringable
         return $this->groupRequiredCustomerNum;
     }
 
-    public function setGroupRequiredCustomerNum(?int $groupRequiredCustomerNum): static
+    public function setGroupRequiredCustomerNum(?int $groupRequiredCustomerNum): void
     {
         $this->groupRequiredCustomerNum = $groupRequiredCustomerNum;
-
-        return $this;
     }
 
     public function getGoodsReserveQuantity(): ?int
@@ -334,11 +399,9 @@ class Goods implements \Stringable
         return $this->goodsReserveQuantity;
     }
 
-    public function setGoodsReserveQuantity(?int $goodsReserveQuantity): static
+    public function setGoodsReserveQuantity(?int $goodsReserveQuantity): void
     {
         $this->goodsReserveQuantity = $goodsReserveQuantity;
-
-        return $this;
     }
 
     public function isMoreSku(): ?bool
@@ -346,11 +409,9 @@ class Goods implements \Stringable
         return $this->moreSku;
     }
 
-    public function setMoreSku(?bool $moreSku): static
+    public function setMoreSku(?bool $moreSku): void
     {
         $this->moreSku = $moreSku;
-
-        return $this;
     }
 
     /**
@@ -388,11 +449,9 @@ class Goods implements \Stringable
         return $this->outerGoodsId;
     }
 
-    public function setOuterGoodsId(?string $outerGoodsId): static
+    public function setOuterGoodsId(?string $outerGoodsId): void
     {
         $this->outerGoodsId = $outerGoodsId;
-
-        return $this;
     }
 
     public function getBadFruitClaim(): ?int
@@ -400,11 +459,9 @@ class Goods implements \Stringable
         return $this->badFruitClaim;
     }
 
-    public function setBadFruitClaim(?int $badFruitClaim): static
+    public function setBadFruitClaim(?int $badFruitClaim): void
     {
         $this->badFruitClaim = $badFruitClaim;
-
-        return $this;
     }
 
     public function getBuyLimit(): ?int
@@ -412,23 +469,25 @@ class Goods implements \Stringable
         return $this->buyLimit;
     }
 
-    public function setBuyLimit(?int $buyLimit): static
+    public function setBuyLimit(?int $buyLimit): void
     {
         $this->buyLimit = $buyLimit;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, string>|null
+     */
     public function getCarouselGalleryList(): ?array
     {
         return $this->carouselGalleryList;
     }
 
-    public function setCarouselGalleryList(?array $carouselGalleryList): static
+    /**
+     * @param array<string, string>|null $carouselGalleryList
+     */
+    public function setCarouselGalleryList(?array $carouselGalleryList): void
     {
         $this->carouselGalleryList = $carouselGalleryList;
-
-        return $this;
     }
 
     public function getThumbUrl(): ?string
@@ -436,16 +495,14 @@ class Goods implements \Stringable
         return $this->thumbUrl;
     }
 
-    public function setThumbUrl(?string $thumbUrl): static
+    public function setThumbUrl(?string $thumbUrl): void
     {
         $this->thumbUrl = $thumbUrl;
-
-        return $this;
     }
 
     public function __toString(): string
     {
-        if ($this->getId() === null || $this->getId() === '') {
+        if (null === $this->getId() || '' === $this->getId()) {
             return '';
         }
 
@@ -457,11 +514,9 @@ class Goods implements \Stringable
         return $this->maiJiaZiTi;
     }
 
-    public function setMaiJiaZiTi(?string $maiJiaZiTi): static
+    public function setMaiJiaZiTi(?string $maiJiaZiTi): void
     {
         $this->maiJiaZiTi = $maiJiaZiTi;
-
-        return $this;
     }
 
     public function getTwoPiecesDiscount(): ?int
@@ -469,11 +524,9 @@ class Goods implements \Stringable
         return $this->twoPiecesDiscount;
     }
 
-    public function setTwoPiecesDiscount(?int $twoPiecesDiscount): static
+    public function setTwoPiecesDiscount(?int $twoPiecesDiscount): void
     {
         $this->twoPiecesDiscount = $twoPiecesDiscount;
-
-        return $this;
     }
 
     public function getCustomerNum(): ?string
@@ -481,23 +534,25 @@ class Goods implements \Stringable
         return $this->customerNum;
     }
 
-    public function setCustomerNum(?string $customerNum): static
+    public function setCustomerNum(?string $customerNum): void
     {
         $this->customerNum = $customerNum;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getElecGoodsAttributes(): ?array
     {
         return $this->elecGoodsAttributes;
     }
 
-    public function setElecGoodsAttributes(?array $elecGoodsAttributes): static
+    /**
+     * @param array<string, mixed>|null $elecGoodsAttributes
+     */
+    public function setElecGoodsAttributes(?array $elecGoodsAttributes): void
     {
         $this->elecGoodsAttributes = $elecGoodsAttributes;
-
-        return $this;
     }
 
     public function isFolt(): ?bool
@@ -505,11 +560,9 @@ class Goods implements \Stringable
         return $this->folt;
     }
 
-    public function setFolt(?bool $folt): static
+    public function setFolt(?bool $folt): void
     {
         $this->folt = $folt;
-
-        return $this;
     }
 
     public function getDeliveryType(): ?DeliveryType
@@ -517,35 +570,41 @@ class Goods implements \Stringable
         return $this->deliveryType;
     }
 
-    public function setDeliveryType(?DeliveryType $deliveryType): static
+    public function setDeliveryType(?DeliveryType $deliveryType): void
     {
         $this->deliveryType = $deliveryType;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getGoodsProperties(): ?array
     {
         return $this->goodsProperties;
     }
 
-    public function setGoodsProperties(?array $goodsProperties): static
+    /**
+     * @param array<string, mixed>|null $goodsProperties
+     */
+    public function setGoodsProperties(?array $goodsProperties): void
     {
         $this->goodsProperties = $goodsProperties;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, string>|null
+     */
     public function getVideoGallery(): ?array
     {
         return $this->videoGallery;
     }
 
-    public function setVideoGallery(?array $videoGallery): static
+    /**
+     * @param array<string, string>|null $videoGallery
+     */
+    public function setVideoGallery(?array $videoGallery): void
     {
         $this->videoGallery = $videoGallery;
-
-        return $this;
     }
 
     public function getZhiHuanBuXiu(): ?int
@@ -553,11 +612,9 @@ class Goods implements \Stringable
         return $this->zhiHuanBuXiu;
     }
 
-    public function setZhiHuanBuXiu(?int $zhiHuanBuXiu): static
+    public function setZhiHuanBuXiu(?int $zhiHuanBuXiu): void
     {
         $this->zhiHuanBuXiu = $zhiHuanBuXiu;
-
-        return $this;
     }
 
     public function isDeliveryOneDay(): ?bool
@@ -565,11 +622,9 @@ class Goods implements \Stringable
         return $this->deliveryOneDay;
     }
 
-    public function setDeliveryOneDay(?bool $deliveryOneDay): static
+    public function setDeliveryOneDay(?bool $deliveryOneDay): void
     {
         $this->deliveryOneDay = $deliveryOneDay;
-
-        return $this;
     }
 
     public function getOverseaType(): ?int
@@ -577,11 +632,9 @@ class Goods implements \Stringable
         return $this->overseaType;
     }
 
-    public function setOverseaType(?int $overseaType): static
+    public function setOverseaType(?int $overseaType): void
     {
         $this->overseaType = $overseaType;
-
-        return $this;
     }
 
     public function getWarmTips(): ?string
@@ -589,11 +642,9 @@ class Goods implements \Stringable
         return $this->warmTips;
     }
 
-    public function setWarmTips(?string $warmTips): static
+    public function setWarmTips(?string $warmTips): void
     {
         $this->warmTips = $warmTips;
-
-        return $this;
     }
 
     public function getGoodsDesc(): ?string
@@ -601,11 +652,9 @@ class Goods implements \Stringable
         return $this->goodsDesc;
     }
 
-    public function setGoodsDesc(?string $goodsDesc): static
+    public function setGoodsDesc(?string $goodsDesc): void
     {
         $this->goodsDesc = $goodsDesc;
-
-        return $this;
     }
 
     public function getWarehouse(): ?string
@@ -613,11 +662,9 @@ class Goods implements \Stringable
         return $this->warehouse;
     }
 
-    public function setWarehouse(?string $warehouse): static
+    public function setWarehouse(?string $warehouse): void
     {
         $this->warehouse = $warehouse;
-
-        return $this;
     }
 
     public function getOutSourceType(): ?int
@@ -625,23 +672,25 @@ class Goods implements \Stringable
         return $this->outSourceType;
     }
 
-    public function setOutSourceType(?int $outSourceType): static
+    public function setOutSourceType(?int $outSourceType): void
     {
         $this->outSourceType = $outSourceType;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getGoodsTravelAttr(): ?array
     {
         return $this->goodsTravelAttr;
     }
 
-    public function setGoodsTravelAttr(?array $goodsTravelAttr): static
+    /**
+     * @param array<string, mixed>|null $goodsTravelAttr
+     */
+    public function setGoodsTravelAttr(?array $goodsTravelAttr): void
     {
         $this->goodsTravelAttr = $goodsTravelAttr;
-
-        return $this;
     }
 
     public function isQuanGuoLianBao(): ?bool
@@ -649,11 +698,9 @@ class Goods implements \Stringable
         return $this->quanGuoLianBao;
     }
 
-    public function setQuanGuoLianBao(?bool $quanGuoLianBao): static
+    public function setQuanGuoLianBao(?bool $quanGuoLianBao): void
     {
         $this->quanGuoLianBao = $quanGuoLianBao;
-
-        return $this;
     }
 
     public function getMarketPrice(): ?int
@@ -661,11 +708,9 @@ class Goods implements \Stringable
         return $this->marketPrice;
     }
 
-    public function setMarketPrice(?int $marketPrice): static
+    public function setMarketPrice(?int $marketPrice): void
     {
         $this->marketPrice = $marketPrice;
-
-        return $this;
     }
 
     public function getOrderLimit(): ?int
@@ -673,11 +718,9 @@ class Goods implements \Stringable
         return $this->orderLimit;
     }
 
-    public function setOrderLimit(?int $orderLimit): static
+    public function setOrderLimit(?int $orderLimit): void
     {
         $this->orderLimit = $orderLimit;
-
-        return $this;
     }
 
     public function getCountry(): ?Country
@@ -685,11 +728,9 @@ class Goods implements \Stringable
         return $this->country;
     }
 
-    public function setCountry(?Country $country): static
+    public function setCountry(?Country $country): void
     {
         $this->country = $country;
-
-        return $this;
     }
 
     public function isInvoiceStatus(): ?bool
@@ -697,11 +738,9 @@ class Goods implements \Stringable
         return $this->invoiceStatus;
     }
 
-    public function setInvoiceStatus(?bool $invoiceStatus): static
+    public function setInvoiceStatus(?bool $invoiceStatus): void
     {
         $this->invoiceStatus = $invoiceStatus;
-
-        return $this;
     }
 
     public function getStatus(): ?GoodsStatus
@@ -709,11 +748,9 @@ class Goods implements \Stringable
         return $this->status;
     }
 
-    public function setStatus(?GoodsStatus $status): static
+    public function setStatus(?GoodsStatus $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     public function isGroupPreSale(): ?bool
@@ -721,11 +758,9 @@ class Goods implements \Stringable
         return $this->groupPreSale;
     }
 
-    public function setGroupPreSale(?bool $groupPreSale): static
+    public function setGroupPreSale(?bool $groupPreSale): void
     {
         $this->groupPreSale = $groupPreSale;
-
-        return $this;
     }
 
     public function getPreSaleTime(): ?\DateTimeInterface
@@ -733,23 +768,25 @@ class Goods implements \Stringable
         return $this->preSaleTime;
     }
 
-    public function setPreSaleTime(?\DateTimeInterface $preSaleTime): static
+    public function setPreSaleTime(?\DateTimeInterface $preSaleTime): void
     {
         $this->preSaleTime = $preSaleTime;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, string>|null
+     */
     public function getDetailGalleryList(): ?array
     {
         return $this->detailGalleryList;
     }
 
-    public function setDetailGalleryList(?array $detailGalleryList): static
+    /**
+     * @param array<string, string>|null $detailGalleryList
+     */
+    public function setDetailGalleryList(?array $detailGalleryList): void
     {
         $this->detailGalleryList = $detailGalleryList;
-
-        return $this;
     }
 
     public function isSkuPreSale(): ?bool
@@ -757,11 +794,9 @@ class Goods implements \Stringable
         return $this->skuPreSale;
     }
 
-    public function setSkuPreSale(?bool $skuPreSale): static
+    public function setSkuPreSale(?bool $skuPreSale): void
     {
         $this->skuPreSale = $skuPreSale;
-
-        return $this;
     }
 
     public function getCategory(): ?Category
@@ -769,11 +804,9 @@ class Goods implements \Stringable
         return $this->category;
     }
 
-    public function setCategory(?Category $category): static
+    public function setCategory(?Category $category): void
     {
         $this->category = $category;
-
-        return $this;
     }
 
     public function getTinyName(): ?string
@@ -781,11 +814,9 @@ class Goods implements \Stringable
         return $this->tinyName;
     }
 
-    public function setTinyName(?string $tinyName): static
+    public function setTinyName(?string $tinyName): void
     {
         $this->tinyName = $tinyName;
-
-        return $this;
     }
 
     public function isPreSale(): ?bool
@@ -793,11 +824,9 @@ class Goods implements \Stringable
         return $this->preSale;
     }
 
-    public function setPreSale(?bool $preSale): static
+    public function setPreSale(?bool $preSale): void
     {
         $this->preSale = $preSale;
-
-        return $this;
     }
 
     public function getOutSourceGoodsId(): ?string
@@ -805,23 +834,25 @@ class Goods implements \Stringable
         return $this->outSourceGoodsId;
     }
 
-    public function setOutSourceGoodsId(?string $outSourceGoodsId): static
+    public function setOutSourceGoodsId(?string $outSourceGoodsId): void
     {
         $this->outSourceGoodsId = $outSourceGoodsId;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getGoodsTradeAttr(): ?array
     {
         return $this->goodsTradeAttr;
     }
 
-    public function setGoodsTradeAttr(?array $goodsTradeAttr): static
+    /**
+     * @param array<string, mixed>|null $goodsTradeAttr
+     */
+    public function setGoodsTradeAttr(?array $goodsTradeAttr): void
     {
         $this->goodsTradeAttr = $goodsTradeAttr;
-
-        return $this;
     }
 
     public function isLackOfWeightClaim(): ?bool
@@ -829,23 +860,25 @@ class Goods implements \Stringable
         return $this->lackOfWeightClaim;
     }
 
-    public function setLackOfWeightClaim(?bool $lackOfWeightClaim): static
+    public function setLackOfWeightClaim(?bool $lackOfWeightClaim): void
     {
         $this->lackOfWeightClaim = $lackOfWeightClaim;
-
-        return $this;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getOverseaGoods(): ?array
     {
         return $this->overseaGoods;
     }
 
-    public function setOverseaGoods(?array $overseaGoods): static
+    /**
+     * @param array<string, mixed>|null $overseaGoods
+     */
+    public function setOverseaGoods(?array $overseaGoods): void
     {
         $this->overseaGoods = $overseaGoods;
-
-        return $this;
     }
 
     public function getCostTemplate(): ?LogisticsTemplate
@@ -853,10 +886,8 @@ class Goods implements \Stringable
         return $this->costTemplate;
     }
 
-    public function setCostTemplate(?LogisticsTemplate $costTemplate): static
+    public function setCostTemplate(?LogisticsTemplate $costTemplate): void
     {
         $this->costTemplate = $costTemplate;
-
-        return $this;
     }
 }

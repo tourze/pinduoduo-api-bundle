@@ -2,27 +2,41 @@
 
 namespace PinduoduoApiBundle\Tests\Exception;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PinduoduoApiBundle\Exception\UploadFailedException;
+use Tourze\PHPUnitBase\AbstractExceptionTestCase;
 
-class UploadFailedExceptionTest extends TestCase
+/**
+ * @internal
+ */
+#[CoversClass(UploadFailedException::class)]
+final class UploadFailedExceptionTest extends AbstractExceptionTestCase
 {
-    public function testConstruct_withMessage_correctlyInitializedException(): void
+    protected function getExceptionClass(): string
     {
-        $message = '图片上传失败';
-        $exception = new UploadFailedException($message);
-        
-        $this->assertEquals($message, $exception->getMessage());
+        return UploadFailedException::class;
+    }
+
+    public function testExceptionCanBeInstantiated(): void
+    {
+        $exception = new UploadFailedException('Upload failed');
+
+        $this->assertInstanceOf(UploadFailedException::class, $exception);
+        $this->assertEquals('Upload failed', $exception->getMessage());
+    }
+
+    public function testExceptionInheritsFromRuntimeException(): void
+    {
+        $exception = new UploadFailedException('Upload error');
+
         $this->assertInstanceOf(\RuntimeException::class, $exception);
     }
-    
-    public function testConstruct_withMessageAndCode_correctlyInitializedException(): void
+
+    public function testExceptionWithFilePathAndReason(): void
     {
-        $message = '图片上传失败';
-        $code = 500;
-        $exception = new UploadFailedException($message, $code);
-        
-        $this->assertEquals($message, $exception->getMessage());
-        $this->assertEquals($code, $exception->getCode());
+        $exception = new UploadFailedException('Failed to upload image.jpg: File too large');
+
+        $this->assertEquals('Failed to upload image.jpg: File too large', $exception->getMessage());
+        $this->assertInstanceOf(UploadFailedException::class, $exception);
     }
 }

@@ -2,13 +2,14 @@
 
 namespace PinduoduoApiBundle\Enum\Stock;
 
+use Tourze\EnumExtra\BadgeInterface;
 use Tourze\EnumExtra\Itemable;
 use Tourze\EnumExtra\ItemTrait;
 use Tourze\EnumExtra\Labelable;
 use Tourze\EnumExtra\Selectable;
 use Tourze\EnumExtra\SelectTrait;
 
-enum DepotPriorityTypeEnum: int implements Labelable, Itemable, Selectable
+enum DepotPriorityTypeEnum: int implements Labelable, Itemable, Selectable, BadgeInterface
 {
     use ItemTrait;
     use SelectTrait;
@@ -19,10 +20,19 @@ enum DepotPriorityTypeEnum: int implements Labelable, Itemable, Selectable
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::NORMAL => '普通',
             self::PREFERRED => '优先',
             self::EXCLUSIVE => '专属',
+        };
+    }
+
+    public function getBadge(): string
+    {
+        return match ($this) {
+            self::NORMAL => 'secondary',
+            self::PREFERRED => 'primary',
+            self::EXCLUSIVE => 'warning',
         };
     }
 }

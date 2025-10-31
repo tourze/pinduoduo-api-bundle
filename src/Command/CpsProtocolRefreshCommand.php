@@ -3,8 +3,10 @@
 namespace PinduoduoApiBundle\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PinduoduoApiBundle\Entity\AuthLog;
+use PinduoduoApiBundle\Entity\Mall;
 use PinduoduoApiBundle\Repository\MallRepository;
-use PinduoduoApiBundle\Service\SdkService;
+use PinduoduoApiBundle\Service\PinduoduoClient;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -21,7 +23,7 @@ class CpsProtocolRefreshCommand extends Command
     public function __construct(
         private readonly MallRepository $mallRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly SdkService $sdkService,
+        private readonly PinduoduoClient $pinduoduoClient,
     ) {
         parent::__construct();
     }
@@ -39,11 +41,11 @@ class CpsProtocolRefreshCommand extends Command
                 // 刷新多多进宝状态
                 // @see https://open.pinduoduo.com/application/document/api?id=pdd.mall.cps.protocol.status.query
                 try {
-                    $response = $this->sdkService->request($mall, 'pdd.mall.cps.protocol.status.query');
-                    dump($authLog);
-                    dump($response);
-                    if (isset($response['mall_cps_protocol_status_query_response'])) {
-                        $mall->setCpsProtocolStatus($response['mall_cps_protocol_status_query_response']['status']);
+                    $response = $this->pinduoduoClient->requestByMall($mall, 'pdd.mall.cps.protocol.status.query');
+                    // $this->logger->info('授权日志', ['authLog' => $authLog]);
+                    // $this->logger->info('协议刷新响应', ['response' => $response]);
+                    if (isset($response['status']) && is_bool($response['status'])) {
+                        $mall->setCpsProtocolStatus($response['status']);
                         $this->entityManager->persist($mall);
                         $this->entityManager->flush();
                     }
