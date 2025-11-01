@@ -3,7 +3,7 @@
 namespace PinduoduoApiBundle\Tests\Request;
 
 use HttpClientBundle\Request\RequestInterface;
-use HttpClientBundle\Tests\Request\RequestTestCase;
+use HttpClientBundle\Test\RequestTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PinduoduoApiBundle\Request\RefreshTokenRequest;
 
