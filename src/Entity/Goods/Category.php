@@ -21,7 +21,7 @@ class Category implements \Stringable
     use SnowflakeKeyAware;
 
     #[Ignore]
-    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'children')]
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'children', cascade: ['persist'])]
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Category $parent = null;
 
