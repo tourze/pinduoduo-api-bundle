@@ -54,7 +54,7 @@
     "tourze/symfony-lock-command-bundle": "1.0.*",
     "tourze/symfony-routing-auto-loader-bundle": "1.0.*",
     "tourze/symfony-snowflake-bundle": "1.0.*",
-    "tourze/symfony-temp-file-bundle": "0.0.*",
+    "tourze/symfony-temp-file-bundle": "1.0.*",
     "tourze/weui-bundle": "1.0.*",
     "yiisoft/json": "^1.0"
   },
