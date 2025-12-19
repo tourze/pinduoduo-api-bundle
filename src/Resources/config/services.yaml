@@ -1,45 +1,26 @@
 services:
+  # default configuration for services in *this* file
   _defaults:
-    autowire: true
-    autoconfigure: true
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false
 
-  # Services
-  PinduoduoApiBundle\Service\:
-    resource: '../../Service/'
-
-  # Repositories
-  PinduoduoApiBundle\Repository\:
-    resource: '../../Repository/'
-
-  # Commands
   PinduoduoApiBundle\Command\:
     resource: '../../Command/'
-
-  # Controllers
+    public: true
   PinduoduoApiBundle\Controller\:
     resource: '../../Controller/'
-    tags: ['controller.service_arguments']
-
-  # Event Subscribers
-  PinduoduoApiBundle\EventSubscriber\:
-    resource: '../../EventSubscriber/'
-
-  # Message Handlers
   PinduoduoApiBundle\MessageHandler\:
     resource: '../../MessageHandler/'
-
-  # Procedures
+    public: true
   PinduoduoApiBundle\Procedure\:
     resource: '../../Procedure/'
-
-  # Requests
-  PinduoduoApiBundle\Request\:
-    resource: '../../Request/'
-
-  # Test Mock Services
-  PinduoduoApiBundle\Tests\Service\MockNoticeService:
-    class: PinduoduoApiBundle\Tests\Service\MockNoticeService
     public: true
-
-  # Service Aliases for Testing
-  WeuiBundle\Service\NoticeService: '@PinduoduoApiBundle\Tests\Service\MockNoticeService'
+  PinduoduoApiBundle\Repository\:
+    resource: '../../Repository/'
+  PinduoduoApiBundle\Service\:
+    resource: '../../Service/'
+    public: true
+  PinduoduoApiBundle\EventSubscriber\:
+    resource: '../../EventSubscriber/'
+    public: true

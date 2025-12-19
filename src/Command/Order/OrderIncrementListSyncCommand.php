@@ -22,7 +22,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask(expression: '* * * * *')]
 #[AsCommand(name: self::NAME, description: '获取增量订单列表')]
-class OrderIncrementListSyncCommand extends LockableCommand
+final class OrderIncrementListSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-increment-order-list';
 

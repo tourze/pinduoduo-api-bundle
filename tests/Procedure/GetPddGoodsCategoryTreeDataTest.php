@@ -4,9 +4,10 @@ namespace PinduoduoApiBundle\Tests\Procedure;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PinduoduoApiBundle\Param\GetPddGoodsCategoryTreeDataParam;
 use PinduoduoApiBundle\Procedure\GetPddGoodsCategoryTreeData;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * @internal
@@ -34,10 +35,12 @@ final class GetPddGoodsCategoryTreeDataTest extends AbstractProcedureTestCase
     public function testExecuteReturnsArray(): void
     {
         $procedure = self::getService(GetPddGoodsCategoryTreeData::class);
-        $result = $procedure->execute();
-        $this->assertIsArray($result);
-        $this->assertNotEmpty($result);
+        $param = new GetPddGoodsCategoryTreeDataParam();
+        $result = $procedure->execute($param);
+        $this->assertIsArray($result->toArray());
+        $this->assertNotEmpty($result->toArray());
         // 验证数组包含数字键（从category.json解析后的结果）
-        $this->assertIsNumeric(array_key_first($result));
+        $resultArray = $result->toArray();
+        $this->assertIsNumeric(array_key_first($resultArray));
     }
 }

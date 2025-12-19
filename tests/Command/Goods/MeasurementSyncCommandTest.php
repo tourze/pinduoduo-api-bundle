@@ -25,7 +25,7 @@ final class MeasurementSyncCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(MeasurementSyncCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

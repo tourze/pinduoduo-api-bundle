@@ -1,21 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PinduoduoApiBundle\Procedure\Goods;
 
+use PinduoduoApiBundle\Param\Goods\GetPddGoodsSpecListParam;
 use PinduoduoApiBundle\Repository\Goods\CategoryRepository;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\CategoryService;
+use PinduoduoApiBundle\Exception\ErrorMessageConstants;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 
 #[MethodDoc(summary: '商品属性类目接口')]
 #[MethodExpose(method: 'GetPddGoodsSpecList')]
 #[MethodTag(name: '拼多多API')]
-class GetPddGoodsSpecList extends LockableProcedure
+final class GetPddGoodsSpecList extends LockableProcedure
 {
     public function __construct(
         private readonly MallRepository $mallRepository,
@@ -24,25 +29,19 @@ class GetPddGoodsSpecList extends LockableProcedure
     ) {
     }
 
-    #[MethodParam(description: '店铺ID')]
-    public string $mallId;
-
-    #[MethodParam(description: '分类ID')]
-    public string $categoryId;
-
     /**
-     * @return array<string, mixed>
+     * @phpstan-param GetPddGoodsSpecListParam $param
      */
-    public function execute(): array
+    public function execute(GetPddGoodsSpecListParam|RpcParamInterface $param): ArrayResult
     {
-        $mall = $this->mallRepository->find($this->mallId);
+        $mall = $this->mallRepository->find($param->mallId);
         if (null === $mall) {
-            throw new ApiException('找不到店铺信息');
+            throw new ApiException(ErrorMessageConstants::MALL_NOT_FOUND);
         }
 
-        $category = $this->categoryRepository->find($this->categoryId);
+        $category = $this->categoryRepository->find($param->categoryId);
         if (null === $category) {
-            throw new ApiException('找不到分类信息');
+            throw new ApiException(ErrorMessageConstants::CATEGORY_NOT_FOUND);
         }
         $this->categoryService->syncSpecList($mall, $category);
 
@@ -54,8 +53,8 @@ class GetPddGoodsSpecList extends LockableProcedure
             ];
         }
 
-        return [
+        return new ArrayResult([
             'list' => $list,
-        ];
+        ]);
     }
 }

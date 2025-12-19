@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 
 #[AsEntityListener(event: Events::postRemove, method: 'postRemove', entity: Goods::class)]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
-class GoodsListener
+final class GoodsListener
 {
     public function __construct(
         private readonly PinduoduoClient $pinduoduoClient,

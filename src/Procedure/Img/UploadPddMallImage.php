@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PinduoduoApiBundle\Procedure\Img;
 
+use PinduoduoApiBundle\Param\Img\UploadPddMallImageParam;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\UploadService;
+use PinduoduoApiBundle\Exception\ErrorMessageConstants;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 use Tourze\JsonRPCLogBundle\Attribute\Log;
 
@@ -16,7 +21,7 @@ use Tourze\JsonRPCLogBundle\Attribute\Log;
 #[MethodExpose(method: 'UploadPddMallImage')]
 #[MethodTag(name: '拼多多API')]
 #[Log]
-class UploadPddMallImage extends LockableProcedure
+final class UploadPddMallImage extends LockableProcedure
 {
     public function __construct(
         private readonly MallRepository $mallRepository,
@@ -24,23 +29,20 @@ class UploadPddMallImage extends LockableProcedure
     ) {
     }
 
-    #[MethodParam(description: '店铺ID')]
-    public string $mallId;
-
-    #[MethodParam(description: '图片URL')]
-    public string $imgUrl;
-
-    public function execute(): array
+    /**
+     * @phpstan-param UploadPddMallImageParam $param
+     */
+    public function execute(UploadPddMallImageParam|RpcParamInterface $param): ArrayResult
     {
-        $mall = $this->mallRepository->find($this->mallId);
+        $mall = $this->mallRepository->find($param->mallId);
         if (null === $mall) {
-            throw new ApiException('找不到店铺信息');
+            throw new ApiException(ErrorMessageConstants::MALL_NOT_FOUND);
         }
 
-        $img = $this->uploadService->uploadImage($mall, $this->imgUrl);
+        $img = $this->uploadService->uploadImage($mall, $param->imgUrl);
 
-        return [
+        return new ArrayResult([
             'url' => $img->getUrl(),
-        ];
+        ]);
     }
 }

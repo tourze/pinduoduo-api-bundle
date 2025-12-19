@@ -5,30 +5,26 @@ declare(strict_types=1);
 namespace PinduoduoApiBundle\Tests\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PinduoduoApiBundle\Entity\Goods\Category;
 use PinduoduoApiBundle\Entity\Order\Order;
 use PinduoduoApiBundle\Enum\Order\GroupStatus;
 use PinduoduoApiBundle\Enum\Order\OrderStatus;
-use PinduoduoApiBundle\Repository\Goods\CategoryRepository;
 use PinduoduoApiBundle\Service\OrderDataMapper;
+use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 
 /**
  * @internal
  */
 #[CoversClass(OrderDataMapper::class)]
-final class OrderDataMapperTest extends TestCase
+#[RunTestsInSeparateProcesses]
+final class OrderDataMapperTest extends AbstractIntegrationTestCase
 {
     private OrderDataMapper $mapper;
 
-    /** @var MockObject&CategoryRepository */
-    private MockObject $categoryRepository;
-
-    protected function setUp(): void
+    protected function onSetUp(): void
     {
-        $this->categoryRepository = $this->createMock(CategoryRepository::class);
-        $this->mapper = new OrderDataMapper($this->categoryRepository);
+        $this->mapper = self::getService(OrderDataMapper::class);
     }
 
     public function testMapToOrderWithFullData(): void
@@ -79,35 +75,30 @@ final class OrderDataMapperTest extends TestCase
 
     public function testMapToOrderWithCategory(): void
     {
+        // 创建并持久化一个真实的 Category
+        $category = new Category();
+        $category->setName('Test Category');
+        $category->setLevel(1);
+
+        self::getEntityManager()->persist($category);
+        self::getEntityManager()->flush();
+
+        $categoryId = $category->getId();
+
         $order = new Order();
-        $category = $this->createMock(Category::class);
-
-        $this->categoryRepository
-            ->expects(self::once())
-            ->method('find')
-            ->with(123)
-            ->willReturn($category)
-        ;
-
-        $item = ['cat_id_1' => 123];
+        $item = ['cat_id_1' => $categoryId];
 
         $this->mapper->mapToOrder($order, $item);
 
-        self::assertSame($category, $order->getCategory());
+        self::assertNotNull($order->getCategory());
+        self::assertSame($category->getId(), $order->getCategory()->getId());
     }
 
     public function testMapToOrderWithInvalidCategoryId(): void
     {
         $order = new Order();
-
-        $this->categoryRepository
-            ->expects(self::once())
-            ->method('find')
-            ->with(999)
-            ->willReturn(null)
-        ;
-
-        $item = ['cat_id_1' => 999];
+        // 使用一个不存在的 ID
+        $item = ['cat_id_1' => 99999999999];
 
         $this->mapper->mapToOrder($order, $item);
 

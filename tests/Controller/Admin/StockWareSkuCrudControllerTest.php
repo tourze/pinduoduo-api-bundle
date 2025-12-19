@@ -182,10 +182,13 @@ final class StockWareSkuCrudControllerTest extends AbstractEasyAdminControllerTe
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '货品' => ['货品'];
-        yield 'SKU' => ['SKU'];
-        yield '关联数量' => ['关联数量'];
-        yield '更新时间' => ['更新时间'];
+        yield '货品' => ['关联货品'];
+        yield 'SKU ID' => ['SKU ID'];
+        yield 'SKU名称' => ['SKU名称'];
+        yield '库存数量' => ['库存数量'];
+        yield '存在货品' => ['存在货品'];
+        yield '是否在售' => ['是否在售'];
+        yield '关联状态' => ['关联状态'];
     }
 
     /**
@@ -194,7 +197,9 @@ final class StockWareSkuCrudControllerTest extends AbstractEasyAdminControllerTe
     public static function provideNewPageFields(): iterable
     {
         yield 'stockWare' => ['stockWare'];
-        yield 'sku' => ['sku'];
+        yield 'goodsId' => ['goodsId'];
+        yield 'skuId' => ['skuId'];
+        yield 'skuName' => ['skuName'];
         yield 'quantity' => ['quantity'];
     }
 
@@ -204,7 +209,9 @@ final class StockWareSkuCrudControllerTest extends AbstractEasyAdminControllerTe
     public static function provideEditPageFields(): iterable
     {
         yield 'stockWare' => ['stockWare'];
-        yield 'sku' => ['sku'];
+        yield 'goodsId' => ['goodsId'];
+        yield 'skuId' => ['skuId'];
+        yield 'skuName' => ['skuName'];
         yield 'quantity' => ['quantity'];
     }
 

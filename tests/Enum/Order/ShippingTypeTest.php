@@ -23,7 +23,7 @@ final class ShippingTypeTest extends AbstractEnumTestCase
         $result = $enum->toArray();
 
         $this->assertNotEmpty($result);
-        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('label', $result);
         $this->assertArrayHasKey('value', $result);
     }
 }

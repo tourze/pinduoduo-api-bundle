@@ -5,7 +5,7 @@ namespace PinduoduoApiBundle\Message;
 /**
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.order.list.get
  */
-class SyncOrderListDetailMessage
+final class SyncOrderListDetailMessage
 {
     /**
      * @var string 店铺ID

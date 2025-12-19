@@ -20,7 +20,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask(expression: '20 */2 * * *')]
 #[AsCommand(name: self::NAME, description: '同步商品地区/国家')]
-class CountrySyncCommand extends LockableCommand
+final class CountrySyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-country-list';
 

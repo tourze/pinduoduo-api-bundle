@@ -4,7 +4,7 @@ namespace PinduoduoApiBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class PinduoduoApiExtension extends AutoExtension
+final class PinduoduoApiExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {

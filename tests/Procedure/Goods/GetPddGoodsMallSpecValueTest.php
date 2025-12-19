@@ -5,8 +5,9 @@ namespace PinduoduoApiBundle\Tests\Procedure\Goods;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PinduoduoApiBundle\Procedure\Goods\GetPddGoodsMallSpecValue;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * @internal
@@ -41,6 +42,6 @@ final class GetPddGoodsMallSpecValueTest extends AbstractProcedureTestCase
 
         $returnType = $reflection->getReturnType();
         $this->assertInstanceOf(\ReflectionNamedType::class, $returnType);
-        $this->assertSame('array', $returnType->getName());
+        $this->assertSame(ArrayResult::class, $returnType->getName());
     }
 }

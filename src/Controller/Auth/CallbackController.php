@@ -22,7 +22,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Tourze\AsyncCommandBundle\Message\RunCommandMessage;
-use WeuiBundle\Service\NoticeService;
 
 #[Autoconfigure(public: true)]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
@@ -36,7 +35,6 @@ final class CallbackController extends AbstractController
         private readonly MallRepository $mallRepository,
         private readonly AuthLogRepository $authLogRepository,
         private readonly MessageBusInterface $messageBus,
-        private readonly NoticeService $noticeService,
     ) {
     }
 
@@ -90,7 +88,12 @@ final class CallbackController extends AbstractController
 
             return $token;
         } catch (\Exception $e) {
-            return $this->noticeService->weuiError($e->getMessage());
+            $this->logger->error('拼多多授权回调失败', [
+                'error' => $e->getMessage(),
+                'account' => $account,
+                'code' => $code,
+            ]);
+            throw new NotFoundHttpException($e->getMessage());
         }
     }
 
@@ -201,7 +204,7 @@ final class CallbackController extends AbstractController
     private function handleCallbackRedirect(Request $request): Response
     {
         if (!$request->getSession()->has('callbackUrl')) {
-            return $this->noticeService->weuiSuccess('授权成功');
+            return new Response('授权成功');
         }
 
         $callbackUrl = $request->getSession()->get('callbackUrl');
@@ -209,6 +212,6 @@ final class CallbackController extends AbstractController
             return $this->redirect($callbackUrl);
         }
 
-        return $this->noticeService->weuiSuccess('授权成功');
+        return new Response('授权成功');
     }
 }

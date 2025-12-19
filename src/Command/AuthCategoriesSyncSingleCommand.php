@@ -22,7 +22,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
  */
 #[AsCommand(name: self::NAME, description: '同步授权商品目录')]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
-class AuthCategoriesSyncSingleCommand extends LockableCommand
+final class AuthCategoriesSyncSingleCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-auth-categories';
 

@@ -13,7 +13,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<DepotPriority>
  */
 #[AsRepository(entityClass: DepotPriority::class)]
-class DepotPriorityRepository extends ServiceEntityRepository
+final class DepotPriorityRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -26,7 +26,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
  */
 #[AsCommand(name: self::NAME, description: '递归同步商品目录')]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
-class CategoryLoopSyncCommand extends LockableCommand
+final class CategoryLoopSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:loop-sync-goods-category';
 

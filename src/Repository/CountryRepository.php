@@ -11,7 +11,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<Country>
  */
 #[AsRepository(entityClass: Country::class)]
-class CountryRepository extends ServiceEntityRepository
+final class CountryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

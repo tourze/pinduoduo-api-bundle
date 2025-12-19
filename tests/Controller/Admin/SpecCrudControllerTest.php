@@ -182,10 +182,9 @@ final class SpecCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '规格ID' => ['规格ID'];
+        // 根据 SpecCrudController::configureFields() 配置的索引页字段
         yield '规格名称' => ['规格名称'];
-        yield '规格值' => ['规格值'];
-        yield '创建时间' => ['创建时间'];
+        yield '关联类目' => ['关联类目'];
     }
 
     /**
@@ -193,10 +192,8 @@ final class SpecCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideNewPageFields(): iterable
     {
-        yield 'specId' => ['specId'];
-        yield 'specName' => ['specName'];
-        yield 'specValue' => ['specValue'];
-        yield 'goods' => ['goods'];
+        yield 'name' => ['name'];
+        yield 'categories' => ['categories'];
     }
 
     /**
@@ -204,10 +201,8 @@ final class SpecCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideEditPageFields(): iterable
     {
-        yield 'specId' => ['specId'];
-        yield 'specName' => ['specName'];
-        yield 'specValue' => ['specValue'];
-        yield 'goods' => ['goods'];
+        yield 'name' => ['name'];
+        yield 'categories' => ['categories'];
     }
 
     /**

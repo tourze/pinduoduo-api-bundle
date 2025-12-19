@@ -26,7 +26,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 #[AsCronTask(expression: '*/30 * * * *')]
 #[AsCommand(name: self::NAME, description: '同步商品列表接口')]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
-class GoodsSyncListCommand extends LockableCommand
+final class GoodsSyncListCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-mall-goods-list';
 

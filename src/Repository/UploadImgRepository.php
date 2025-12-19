@@ -11,7 +11,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<UploadImg>
  */
 #[AsRepository(entityClass: UploadImg::class)]
-class UploadImgRepository extends ServiceEntityRepository
+final class UploadImgRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

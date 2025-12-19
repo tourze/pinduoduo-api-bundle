@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PinduoduoApiBundle\Tests\Service;
 
 use HttpClientBundle\Client\ApiClient;
@@ -16,42 +18,40 @@ use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 #[RunTestsInSeparateProcesses]
 final class PinduoduoClientTest extends AbstractIntegrationTestCase
 {
+    private PinduoduoClient $client;
+
     protected function onSetUp(): void
     {
+        $this->client = self::getService(PinduoduoClient::class);
     }
 
     public function testExtendsApiClient(): void
     {
-        $client = self::getService(PinduoduoClient::class);
-        $this->assertInstanceOf(ApiClient::class, $client);
+        $this->assertInstanceOf(ApiClient::class, $this->client);
     }
 
     public function testGetLabel(): void
     {
-        $client = self::getService(PinduoduoClient::class);
-        $label = $client->getLabel();
+        $label = $this->client->getLabel();
 
         $this->assertEquals('拼多多API请求客户端', $label);
     }
 
     public function testGetBaseUrl(): void
     {
-        $client = self::getService(PinduoduoClient::class);
-        $baseUrl = $client->getBaseUrl();
+        $baseUrl = $this->client->getBaseUrl();
 
         $this->assertEquals('https://gw-api.pinduoduo.com', $baseUrl);
     }
 
     public function testClientCanBeInstantiated(): void
     {
-        $client = self::getService(PinduoduoClient::class);
-        $this->assertInstanceOf(PinduoduoClient::class, $client);
+        $this->assertInstanceOf(PinduoduoClient::class, $this->client);
     }
 
     public function testClientHasRequiredMethods(): void
     {
-        $client = self::getService(PinduoduoClient::class);
-        $reflection = new \ReflectionClass($client);
+        $reflection = new \ReflectionClass($this->client);
 
         $this->assertTrue($reflection->hasMethod('request'));
         $this->assertTrue($reflection->hasMethod('requestByMall'));
@@ -61,23 +61,25 @@ final class PinduoduoClientTest extends AbstractIntegrationTestCase
 
     public function testClientHasCorrectDependencies(): void
     {
-        $client = self::getService(PinduoduoClient::class);
-        $this->assertInstanceOf(PinduoduoClient::class, $client);
+        $this->assertInstanceOf(PinduoduoClient::class, $this->client);
 
-        $this->assertNotEmpty($client->getLabel());
-        $this->assertNotEmpty($client->getBaseUrl());
+        $this->assertNotEmpty($this->client->getLabel());
+        $this->assertNotEmpty($this->client->getBaseUrl());
     }
 
     public function testGenerateAuthUrl(): void
     {
-        $client = self::getService(PinduoduoClient::class);
+        // 创建一个真实的 Account 对象
+        $account = new Account();
+        $account->setTitle('Test Account');
+        $account->setClientId('test_client_id');
+        $account->setClientSecret('test_client_secret');
 
-        // 创建一个模拟的Account对象
-        $account = $this->createMock(Account::class);
-        $account->method('getId')->willReturn('1');
+        self::getEntityManager()->persist($account);
+        self::getEntityManager()->flush();
 
         // 测试生成授权URL的功能
-        $url = $client->generateAuthUrl($account);
+        $url = $this->client->generateAuthUrl($account);
 
         $this->assertNotEmpty($url);
         $this->assertStringStartsWith('https://', $url);

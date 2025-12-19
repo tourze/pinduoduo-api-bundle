@@ -18,7 +18,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 
 #[AsCronTask(expression: '* 5 * * *')]
 #[AsCommand(name: self::NAME, description: '订单基础信息列表查询接口（根据成交时间）')]
-class OrderBasicListSyncCommand extends LockableCommand
+final class OrderBasicListSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-basic-order-list';
 

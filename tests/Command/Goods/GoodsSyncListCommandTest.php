@@ -25,7 +25,7 @@ final class GoodsSyncListCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(GoodsSyncListCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

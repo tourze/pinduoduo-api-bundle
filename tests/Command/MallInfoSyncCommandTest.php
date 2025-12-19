@@ -26,7 +26,7 @@ final class MallInfoSyncCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(MallInfoSyncCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

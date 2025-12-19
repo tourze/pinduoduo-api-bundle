@@ -11,7 +11,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<Spec>
  */
 #[AsRepository(entityClass: Spec::class)]
-class SpecRepository extends ServiceEntityRepository
+final class SpecRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

@@ -17,7 +17,7 @@ use Tourze\LockCommandBundle\Command\LockableCommand;
  * @see https://open.pinduoduo.com/application/document/api?id=pdd.goods.spec.get
  */
 #[AsCommand(name: self::NAME, description: '商品属性类目接口')]
-class SpecSyncCommand extends LockableCommand
+final class SpecSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-spec-list';
 

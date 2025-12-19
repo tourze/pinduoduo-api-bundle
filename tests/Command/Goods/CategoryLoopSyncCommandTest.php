@@ -25,7 +25,7 @@ final class CategoryLoopSyncCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(CategoryLoopSyncCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

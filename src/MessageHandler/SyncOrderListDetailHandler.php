@@ -9,7 +9,7 @@ use PinduoduoApiBundle\Repository\Order\OrderRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler]
-class SyncOrderListDetailHandler
+final class SyncOrderListDetailHandler
 {
     public function __construct(
         private readonly OrderRepository $orderRepository,

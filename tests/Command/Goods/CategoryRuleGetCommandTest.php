@@ -26,7 +26,7 @@ final class CategoryRuleGetCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(CategoryRuleGetCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

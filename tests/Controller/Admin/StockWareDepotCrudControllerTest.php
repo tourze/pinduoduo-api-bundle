@@ -182,10 +182,10 @@ final class StockWareDepotCrudControllerTest extends AbstractEasyAdminController
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '货品' => ['货品'];
-        yield '仓库' => ['仓库'];
-        yield '库存数量' => ['库存数量'];
-        yield '更新时间' => ['更新时间'];
+        yield '货品' => ['关联货品'];
+        yield '仓库' => ['关联仓库'];
+        yield '可用库存' => ['可用库存'];
+        yield '总库存' => ['总库存'];
     }
 
     /**
@@ -195,7 +195,8 @@ final class StockWareDepotCrudControllerTest extends AbstractEasyAdminController
     {
         yield 'stockWare' => ['stockWare'];
         yield 'depot' => ['depot'];
-        yield 'quantity' => ['quantity'];
+        yield 'availableQuantity' => ['availableQuantity'];
+        yield 'totalQuantity' => ['totalQuantity'];
     }
 
     /**
@@ -205,7 +206,8 @@ final class StockWareDepotCrudControllerTest extends AbstractEasyAdminController
     {
         yield 'stockWare' => ['stockWare'];
         yield 'depot' => ['depot'];
-        yield 'quantity' => ['quantity'];
+        yield 'availableQuantity' => ['availableQuantity'];
+        yield 'totalQuantity' => ['totalQuantity'];
     }
 
     /**

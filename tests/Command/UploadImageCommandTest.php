@@ -25,7 +25,7 @@ final class UploadImageCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(UploadImageCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

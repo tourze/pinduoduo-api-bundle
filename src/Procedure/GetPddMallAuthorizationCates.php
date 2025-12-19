@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PinduoduoApiBundle\Procedure;
 
+use PinduoduoApiBundle\Param\GetPddMallAuthorizationCatesParam;
 use PinduoduoApiBundle\Repository\MallRepository;
 use PinduoduoApiBundle\Service\PinduoduoClient;
 use Tourze\JsonRPC\Core\Attribute\MethodDoc;
 use Tourze\JsonRPC\Core\Attribute\MethodExpose;
-use Tourze\JsonRPC\Core\Attribute\MethodParam;
 use Tourze\JsonRPC\Core\Attribute\MethodTag;
 use Tourze\JsonRPC\Core\Exception\ApiException;
+use Tourze\JsonRPC\Core\Contracts\RpcParamInterface;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 
 /**
@@ -17,36 +21,33 @@ use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
 #[MethodDoc(summary: '获取当前授权商家可发布的商品类目信息')]
 #[MethodExpose(method: 'GetPddMallAuthorizationCates')]
 #[MethodTag(name: '拼多多API')]
-class GetPddMallAuthorizationCates extends LockableProcedure
+final class GetPddMallAuthorizationCates extends LockableProcedure
 {
-    #[MethodParam(description: '默认值=0，值=0时为顶点cat_id,通过树顶级节点获取一级类目')]
-    public int $parentCatId = 0;
-
-    #[MethodParam(description: '店铺ID')]
-    public string $mallId;
-
     public function __construct(
         private readonly MallRepository $mallRepository,
         private readonly PinduoduoClient $pinduoduoClient,
     ) {
     }
 
-    public function execute(): array
+    /**
+     * @phpstan-param GetPddMallAuthorizationCatesParam $param
+     */
+    public function execute(GetPddMallAuthorizationCatesParam|RpcParamInterface $param): ArrayResult
     {
-        $mall = $this->mallRepository->find($this->mallId);
+        $mall = $this->mallRepository->find($param->mallId);
         if (null === $mall) {
             throw new ApiException('找不到店铺信息');
         }
 
         try {
             $result = $this->pinduoduoClient->requestByMall($mall, 'pdd.goods.authorization.cats', [
-                'parent_cat_id' => $this->parentCatId,
+                'parent_cat_id' => $param->parentCatId,
             ]);
 
             $catsList = $result['goods_cats_list'] ?? [];
 
-            /** @var array<string, mixed> */
-            return is_array($catsList) ? $catsList : [];
+            /** @var ArrayResult<array<string, mixed>> */
+            return new ArrayResult(is_array($catsList) ? $catsList : []);
         } catch (\Throwable $exception) {
             throw new ApiException($exception->getMessage(), previous: $exception);
         }

@@ -25,7 +25,7 @@ final class SpecSyncCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(SpecSyncCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

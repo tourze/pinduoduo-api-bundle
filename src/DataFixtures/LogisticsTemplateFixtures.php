@@ -26,7 +26,7 @@ class LogisticsTemplateFixtures extends Fixture
         // 获取Mall测试数据
         $mall = $this->mallRepository->findOneBy([]);
 
-        if (!$mall) {
+        if (null === $mall) {
             // 如果没有Mall数据，创建一个默认的
             $mall = new Mall();
             $mall->setName('Default Test Mall');

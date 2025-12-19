@@ -20,7 +20,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
 #[AsCronTask(expression: '*/5 * * * *')]
 #[AsCommand(name: self::NAME, description: '更新AccessToken')]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
-class AccessTokenRefreshCommand extends Command
+final class AccessTokenRefreshCommand extends Command
 {
     public const NAME = 'pdd:refresh-access-token';
 

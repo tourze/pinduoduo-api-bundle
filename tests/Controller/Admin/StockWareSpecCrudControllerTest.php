@@ -182,10 +182,10 @@ final class StockWareSpecCrudControllerTest extends AbstractEasyAdminControllerT
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '货品' => ['货品'];
-        yield '规格' => ['规格'];
+        yield 'SKU' => ['关联SKU'];
+        yield '规格ID' => ['规格ID'];
+        yield '规格名称' => ['规格名称'];
         yield '规格值' => ['规格值'];
-        yield '更新时间' => ['更新时间'];
     }
 
     /**
@@ -193,8 +193,9 @@ final class StockWareSpecCrudControllerTest extends AbstractEasyAdminControllerT
      */
     public static function provideNewPageFields(): iterable
     {
-        yield 'stockWare' => ['stockWare'];
-        yield 'spec' => ['spec'];
+        yield 'stockWareSku' => ['stockWareSku'];
+        yield 'specId' => ['specId'];
+        yield 'specKey' => ['specKey'];
         yield 'specValue' => ['specValue'];
     }
 
@@ -203,8 +204,9 @@ final class StockWareSpecCrudControllerTest extends AbstractEasyAdminControllerT
      */
     public static function provideEditPageFields(): iterable
     {
-        yield 'stockWare' => ['stockWare'];
-        yield 'spec' => ['spec'];
+        yield 'stockWareSku' => ['stockWareSku'];
+        yield 'specId' => ['specId'];
+        yield 'specKey' => ['specKey'];
         yield 'specValue' => ['specValue'];
     }
 

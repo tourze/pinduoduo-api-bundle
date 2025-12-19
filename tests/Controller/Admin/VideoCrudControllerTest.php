@@ -182,10 +182,9 @@ final class VideoCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '视频ID' => ['视频ID'];
-        yield '视频URL' => ['视频URL'];
-        yield '文件大小' => ['文件大小'];
-        yield '上传时间' => ['上传时间'];
+        yield '店铺' => ['关联店铺'];
+        yield 'URL' => ['视频URL'];
+        yield '状态' => ['状态'];
     }
 
     /**
@@ -193,10 +192,9 @@ final class VideoCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideNewPageFields(): iterable
     {
-        yield 'videoId' => ['videoId'];
-        yield 'videoUrl' => ['videoUrl'];
-        yield 'fileSize' => ['fileSize'];
         yield 'mall' => ['mall'];
+        yield 'url' => ['url'];
+        yield 'status' => ['status'];
     }
 
     /**
@@ -204,10 +202,9 @@ final class VideoCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideEditPageFields(): iterable
     {
-        yield 'videoId' => ['videoId'];
-        yield 'videoUrl' => ['videoUrl'];
-        yield 'fileSize' => ['fileSize'];
         yield 'mall' => ['mall'];
+        yield 'url' => ['url'];
+        yield 'status' => ['status'];
     }
 
     /**

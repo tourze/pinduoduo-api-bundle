@@ -21,7 +21,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask(expression: '*/15 * * * *')]
 #[AsCommand(name: self::NAME, description: '同步运费模板')]
-class LogisticsTemplateSyncCommand extends LockableCommand
+final class LogisticsTemplateSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-logistics-template-list';
 

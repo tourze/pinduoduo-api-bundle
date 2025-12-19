@@ -20,7 +20,7 @@ use Tourze\Symfony\CronJob\Attribute\AsCronTask;
  */
 #[AsCronTask(expression: '* 7 * * *')]
 #[AsCommand(name: self::NAME, description: '同步商品sku计量单位')]
-class MeasurementSyncCommand extends LockableCommand
+final class MeasurementSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-measurement-list';
 

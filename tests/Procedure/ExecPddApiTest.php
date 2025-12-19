@@ -5,8 +5,8 @@ namespace PinduoduoApiBundle\Tests\Procedure;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PinduoduoApiBundle\Procedure\ExecPddApi;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
 use Tourze\JsonRPCLockBundle\Procedure\LockableProcedure;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * @internal

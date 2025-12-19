@@ -25,7 +25,7 @@ final class LogisticsTemplateSyncCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(LogisticsTemplateSyncCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

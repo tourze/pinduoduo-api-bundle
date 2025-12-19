@@ -56,7 +56,7 @@ final class MeasurementCrudControllerTest extends AbstractEasyAdminControllerTes
 
                 $form = $crawler->selectButton('Create')->form();
                 $crawler = $client->submit($form, [
-                    'measurement[unitName]' => '',
+                    'Measurement[code]' => '',
                 ]);
 
                 $validationResponse = $client->getResponse();
@@ -134,7 +134,7 @@ final class MeasurementCrudControllerTest extends AbstractEasyAdminControllerTes
         $client->catchExceptions(false);
 
         try {
-            $client->request('GET', '/pinduoduo-api/measurement?filters[unitId]=1');
+            $client->request('GET', '/pinduoduo-api/measurement?filters[code]=test');
             $response = $client->getResponse();
 
             $this->assertTrue(
@@ -182,10 +182,8 @@ final class MeasurementCrudControllerTest extends AbstractEasyAdminControllerTes
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '单位ID' => ['单位ID'];
-        yield '单位名称' => ['单位名称'];
-        yield '是否标准单位' => ['是否标准单位'];
-        yield '创建时间' => ['创建时间'];
+        // 根据 MeasurementCrudController::configureFields() 配置的索引页字段
+        yield '编码' => ['编码'];
     }
 
     /**
@@ -193,9 +191,8 @@ final class MeasurementCrudControllerTest extends AbstractEasyAdminControllerTes
      */
     public static function provideNewPageFields(): iterable
     {
-        yield 'unitId' => ['unitId'];
-        yield 'unitName' => ['unitName'];
-        yield 'isStandard' => ['isStandard'];
+        yield 'code' => ['code'];
+        yield 'description' => ['description'];
     }
 
     /**
@@ -203,12 +200,7 @@ final class MeasurementCrudControllerTest extends AbstractEasyAdminControllerTes
      */
     public static function provideEditPageFields(): iterable
     {
-        yield 'unitId' => ['unitId'];
-        yield 'unitName' => ['unitName'];
-        yield 'isStandard' => ['isStandard'];
+        yield 'code' => ['code'];
+        yield 'description' => ['description'];
     }
-
-    /**
-     * 重写父类方法，移除对特定必填字段的硬编码检查
-     */
 }

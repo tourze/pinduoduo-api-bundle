@@ -25,7 +25,7 @@ final class OrderBasicListSyncCommandTest extends AbstractCommandTestCase
         $command = self::getContainer()->get(OrderBasicListSyncCommand::class);
 
         $application = new Application();
-        $application->add($command);
+        $application->addCommand($command);
 
         $this->commandTester = new CommandTester($command);
     }

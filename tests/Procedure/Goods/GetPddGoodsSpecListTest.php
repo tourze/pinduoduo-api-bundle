@@ -6,7 +6,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PinduoduoApiBundle\Procedure\Goods\GetPddGoodsSpecList;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * @internal
@@ -41,6 +42,6 @@ final class GetPddGoodsSpecListTest extends AbstractProcedureTestCase
 
         $returnType = $reflection->getReturnType();
         $this->assertInstanceOf(\ReflectionNamedType::class, $returnType);
-        $this->assertSame('array', $returnType->getName());
+        $this->assertSame(ArrayResult::class, $returnType->getName());
     }
 }

@@ -529,7 +529,7 @@ final class DepotRepositoryTest extends AbstractRepositoryTestCase
         $this->clearAllDepots($repository);
 
         $depot = new Depot();
-        $depot->setDepotId('PDD123456');
+        $depot->setDepotId('123456789');
         $depot->setDepotCode('PDD_001');
         $depot->setDepotName('拼多多仓库');
         $depot->setDepotAlias('PDD Depot');
@@ -546,13 +546,13 @@ final class DepotRepositoryTest extends AbstractRepositoryTestCase
         $depot->setIsDefault(false);
         $repository->save($depot);
 
-        $result = $repository->findByPddDepotId('PDD123456');
+        $result = $repository->findByPddDepotId('123456789');
 
         $this->assertInstanceOf(Depot::class, $result);
         $this->assertSame('PDD_001', $result->getDepotCode());
-        $this->assertSame('PDD123456', $result->getDepotId());
+        $this->assertSame('123456789', $result->getDepotId());
 
-        $notFound = $repository->findByPddDepotId('NOTEXIST999');
+        $notFound = $repository->findByPddDepotId('999999999');
         $this->assertNull($notFound);
     }
 

@@ -95,13 +95,13 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat = new AuthCat();
         $authCat->setMall($mall);
         $authCat->setParentCatId('300');
-        $authCat->setCatId('unique_cat_id');
+        $authCat->setCatId('999001');
         $authCat->setCatName('Unique Category');
         $authCat->setLeaf(false);
 
         $this->persistAndFlush($authCat);
 
-        $foundAuthCat = $repository->findOneBy(['catId' => 'unique_cat_id']);
+        $foundAuthCat = $repository->findOneBy(['catId' => '999001']);
         $this->assertNotNull($foundAuthCat);
         $this->assertSame('Unique Category', $foundAuthCat->getCatName());
         $this->assertFalse($foundAuthCat->isLeaf());
@@ -217,7 +217,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat1 = new AuthCat();
         $authCat1->setMall($mall);
         $authCat1->setParentCatId('0');
-        $authCat1->setCatId('alpha_cat');
+        $authCat1->setCatId('100001');
         $authCat1->setCatName('Alpha Category');
         $authCat1->setLeaf(true);
         $this->persistAndFlush($authCat1);
@@ -225,7 +225,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat2 = new AuthCat();
         $authCat2->setMall($mall);
         $authCat2->setParentCatId('0');
-        $authCat2->setCatId('beta_cat');
+        $authCat2->setCatId('100002');
         $authCat2->setCatName('Beta Category');
         $authCat2->setLeaf(false);
         $this->persistAndFlush($authCat2);
@@ -233,7 +233,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat3 = new AuthCat();
         $authCat3->setMall($mall);
         $authCat3->setParentCatId('0');
-        $authCat3->setCatId('gamma_cat');
+        $authCat3->setCatId('100003');
         $authCat3->setCatName('Gamma Category');
         $authCat3->setLeaf(true);
         $this->persistAndFlush($authCat3);
@@ -273,7 +273,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat1 = new AuthCat();
         $authCat1->setMall($mall);
         $authCat1->setParentCatId('0');
-        $authCat1->setCatId('null_test_cat');
+        $authCat1->setCatId('200001');
         $authCat1->setCatName('Null Test Category');
         $authCat1->setLeaf(null);
         $this->persistAndFlush($authCat1);
@@ -314,7 +314,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat1 = new AuthCat();
         $authCat1->setMall($mall);
         $authCat1->setParentCatId('0');
-        $authCat1->setCatId('null_count_cat');
+        $authCat1->setCatId('300001');
         $authCat1->setCatName('Null Count Category');
         $authCat1->setLeaf(null);
         $this->persistAndFlush($authCat1);
@@ -322,7 +322,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat2 = new AuthCat();
         $authCat2->setMall($mall);
         $authCat2->setParentCatId('0');
-        $authCat2->setCatId('leaf_count_cat');
+        $authCat2->setCatId('300002');
         $authCat2->setCatName('Leaf Count Category');
         $authCat2->setLeaf(true);
         $this->persistAndFlush($authCat2);
@@ -371,7 +371,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat1 = new AuthCat();
         $authCat1->setMall($mall1);
         $authCat1->setParentCatId('0');
-        $authCat1->setCatId('assoc_cat_1');
+        $authCat1->setCatId('400001');
         $authCat1->setCatName('Association Category 1');
         $authCat1->setLeaf(true);
         $this->persistAndFlush($authCat1);
@@ -379,7 +379,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat2 = new AuthCat();
         $authCat2->setMall($mall1);
         $authCat2->setParentCatId('0');
-        $authCat2->setCatId('assoc_cat_2');
+        $authCat2->setCatId('400002');
         $authCat2->setCatName('Association Category 2');
         $authCat2->setLeaf(false);
         $this->persistAndFlush($authCat2);
@@ -387,7 +387,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat3 = new AuthCat();
         $authCat3->setMall($mall2);
         $authCat3->setParentCatId('0');
-        $authCat3->setCatId('assoc_cat_3');
+        $authCat3->setCatId('400003');
         $authCat3->setCatName('Association Category 3');
         $authCat3->setLeaf(true);
         $this->persistAndFlush($authCat3);
@@ -422,7 +422,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
             $authCat = new AuthCat();
             $authCat->setMall($mall1);
             $authCat->setParentCatId('0');
-            $authCat->setCatId("count_assoc_cat_{$i}");
+            $authCat->setCatId((string) (600000 + $i));
             $authCat->setCatName("Count Association Category {$i}");
             $authCat->setLeaf(0 === $i % 2);
             $this->persistAndFlush($authCat);
@@ -431,7 +431,7 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
         $authCat4 = new AuthCat();
         $authCat4->setMall($mall2);
         $authCat4->setParentCatId('0');
-        $authCat4->setCatId('count_assoc_cat_4');
+        $authCat4->setCatId('500004');
         $authCat4->setCatName('Count Association Category 4');
         $authCat4->setLeaf(true);
         $this->persistAndFlush($authCat4);
@@ -454,7 +454,8 @@ final class AuthCatRepositoryTest extends AbstractRepositoryTestCase
 
         $entity = new AuthCat();
         $entity->setMall($mall);
-        $entity->setCatId('test_cat_' . uniqid());
+        // 使用数字字符串，因为 catId 是 BIGINT 类型
+        $entity->setCatId((string) random_int(100000, 999999));
         $entity->setCatName('Test Category ' . uniqid());
         $entity->setParentCatId('0');
         $entity->setLeaf(true);

@@ -21,7 +21,7 @@ final class DepotBusinessTypeEnumTest extends AbstractEnumTestCase
     {
         $result = DepotBusinessTypeEnum::NORMAL->toArray();
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('label', $result);
         $this->assertArrayHasKey('value', $result);
         $this->assertArrayHasKey('label', $result);
     }

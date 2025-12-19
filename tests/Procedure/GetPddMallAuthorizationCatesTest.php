@@ -5,7 +5,8 @@ namespace PinduoduoApiBundle\Tests\Procedure;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PinduoduoApiBundle\Procedure\GetPddMallAuthorizationCates;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
+use Tourze\JsonRPC\Core\Result\ArrayResult;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * @internal
@@ -34,6 +35,6 @@ final class GetPddMallAuthorizationCatesTest extends AbstractProcedureTestCase
 
         $returnType = $reflection->getReturnType();
         $this->assertInstanceOf(\ReflectionNamedType::class, $returnType);
-        $this->assertSame('array', $returnType->getName());
+        $this->assertSame(ArrayResult::class, $returnType->getName());
     }
 }

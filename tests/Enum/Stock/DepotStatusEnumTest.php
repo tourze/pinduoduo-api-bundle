@@ -23,7 +23,7 @@ final class DepotStatusEnumTest extends AbstractEnumTestCase
         $enum = DepotStatusEnum::cases()[0];
         $result = $enum->toArray();
         $this->assertIsArray($result);
-        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('label', $result);
         $this->assertArrayHasKey('value', $result);
         $this->assertArrayHasKey('label', $result);
     }

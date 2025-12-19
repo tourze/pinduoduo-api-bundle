@@ -6,7 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PinduoduoApiBundle\Procedure\Img\UploadPddMallImage;
 use Tourze\JsonRPC\Core\Procedure\BaseProcedure;
-use Tourze\JsonRPC\Core\Tests\AbstractProcedureTestCase;
+use Tourze\PHPUnitJsonRPC\AbstractProcedureTestCase;
 
 /**
  * @internal
@@ -31,21 +31,15 @@ final class UploadPddMallImageTest extends AbstractProcedureTestCase
         $this->assertInstanceOf(BaseProcedure::class, $procedure);
     }
 
-    public function testProcedureHasRequiredProperties(): void
+    public function testProcedureHasRequiredDependencies(): void
     {
         $procedure = self::getService(UploadPddMallImage::class);
-        $this->assertObjectHasProperty('mallId', $procedure);
-        $this->assertObjectHasProperty('imgUrl', $procedure);
 
-        // 验证属性类型
+        // 验证 Procedure 有必要的依赖注入
         $reflection = new \ReflectionClass($procedure);
-        $mallIdProperty = $reflection->getProperty('mallId');
-        $imgUrlProperty = $reflection->getProperty('imgUrl');
 
-        $this->assertTrue($mallIdProperty->hasType());
-        $this->assertEquals('string', (string) $mallIdProperty->getType());
-        $this->assertTrue($imgUrlProperty->hasType());
-        $this->assertEquals('string', (string) $imgUrlProperty->getType());
+        $this->assertTrue($reflection->hasProperty('mallRepository'));
+        $this->assertTrue($reflection->hasProperty('uploadService'));
     }
 
     public function testExecuteMethodExists(): void

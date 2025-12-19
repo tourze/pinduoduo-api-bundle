@@ -182,10 +182,9 @@ final class UploadImgCrudControllerTest extends AbstractEasyAdminControllerTestC
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield '图片ID' => ['图片ID'];
-        yield '图片URL' => ['图片URL'];
-        yield '文件大小' => ['文件大小'];
-        yield '上传时间' => ['上传时间'];
+        yield '店铺' => ['关联店铺'];
+        yield '文件' => ['原始图片文件'];
+        yield 'URL' => ['图片URL'];
     }
 
     /**
@@ -193,10 +192,9 @@ final class UploadImgCrudControllerTest extends AbstractEasyAdminControllerTestC
      */
     public static function provideNewPageFields(): iterable
     {
-        yield 'imgId' => ['imgId'];
-        yield 'imgUrl' => ['imgUrl'];
-        yield 'fileSize' => ['fileSize'];
         yield 'mall' => ['mall'];
+        yield 'file' => ['file'];
+        yield 'url' => ['url'];
     }
 
     /**
@@ -204,10 +202,9 @@ final class UploadImgCrudControllerTest extends AbstractEasyAdminControllerTestC
      */
     public static function provideEditPageFields(): iterable
     {
-        yield 'imgId' => ['imgId'];
-        yield 'imgUrl' => ['imgUrl'];
-        yield 'fileSize' => ['fileSize'];
         yield 'mall' => ['mall'];
+        yield 'file' => ['file'];
+        yield 'url' => ['url'];
     }
 
     /**

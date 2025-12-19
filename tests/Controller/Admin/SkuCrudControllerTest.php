@@ -182,10 +182,13 @@ final class SkuCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideIndexPageHeaders(): iterable
     {
-        yield 'SKU ID' => ['SKU ID'];
-        yield '商品规格' => ['商品规格'];
-        yield '价格' => ['价格'];
-        yield '库存' => ['库存'];
+        // 根据 SkuCrudController::configureFields() 配置的索引页字段
+        yield '商品' => ['商品'];
+        yield '规格名称' => ['规格名称'];
+        yield 'SKU库存' => ['SKU库存'];
+        yield '单买价格' => ['单买价格'];
+        yield '团购价格' => ['团购价格'];
+        yield '是否在架' => ['是否在架'];
     }
 
     /**
@@ -193,10 +196,12 @@ final class SkuCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideNewPageFields(): iterable
     {
-        yield 'skuId' => ['skuId'];
-        yield 'price' => ['price'];
-        yield 'quantity' => ['quantity'];
         yield 'goods' => ['goods'];
+        yield 'specName' => ['specName'];
+        yield 'quantity' => ['quantity'];
+        yield 'price' => ['price'];
+        yield 'multiPrice' => ['multiPrice'];
+        yield 'onsale' => ['onsale'];
     }
 
     /**
@@ -204,10 +209,12 @@ final class SkuCrudControllerTest extends AbstractEasyAdminControllerTestCase
      */
     public static function provideEditPageFields(): iterable
     {
-        yield 'skuId' => ['skuId'];
-        yield 'price' => ['price'];
-        yield 'quantity' => ['quantity'];
         yield 'goods' => ['goods'];
+        yield 'specName' => ['specName'];
+        yield 'quantity' => ['quantity'];
+        yield 'price' => ['price'];
+        yield 'multiPrice' => ['multiPrice'];
+        yield 'onsale' => ['onsale'];
     }
 
     /**

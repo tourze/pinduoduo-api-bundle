@@ -13,7 +13,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  */
 #[Autoconfigure(public: true)]
 #[AsRepository(entityClass: Mall::class)]
-class MallRepository extends ServiceEntityRepository
+final class MallRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

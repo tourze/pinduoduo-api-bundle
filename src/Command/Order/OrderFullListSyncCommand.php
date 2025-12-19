@@ -25,7 +25,7 @@ use Yiisoft\Json\Json;
 #[AsCronTask(expression: '45 */6 * * *')]
 #[AsCommand(name: self::NAME, description: '获取全量订单列表')]
 #[WithMonologChannel(channel: 'pinduoduo_api')]
-class OrderFullListSyncCommand extends LockableCommand
+final class OrderFullListSyncCommand extends LockableCommand
 {
     public const NAME = 'pdd:sync-full-order-list';
 
