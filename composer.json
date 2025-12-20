@@ -49,7 +49,7 @@
     "tourze/json-rpc-core": "2.0.*",
     "tourze/json-rpc-lock-bundle": "2.0.*",
     "tourze/json-rpc-log-bundle": "2.0.*",
-    "tourze/symfony-cron-job-bundle": "1.1.*",
+    "tourze/symfony-cron-job-bundle": "1.2.*",
     "tourze/symfony-dependency-service-loader": "1.0.*",
     "tourze/symfony-lock-command-bundle": "1.1.*",
     "tourze/symfony-routing-auto-loader-bundle": "1.0.*",
